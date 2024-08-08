@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+FRACTL_CLI_VERSION="0.1.0-SNAPSHOT"
+
+## Determine coordinates
+export FRACTL_HOME="${FRACTL_HOME:-"$HOME/.fractl"}"
+FRACTL_CLI_JAR="$FRACTL_HOME/self-installs/fractl.cli-$FRACTL_CLI_VERSION-standalone.jar"
+
+## Determine `java` executable
+if [ ! -x "$JAVA_CMD" ] && ! type -f java >/dev/null
+then
+    msg "Fractl CLI couldn't find 'java' executable, which is required."
+    msg "Please either set JAVA_CMD or put java (>=1.6) in your \$PATH ($PATH)."
+    exit 1
+fi
+export FRACTL_JAVA_CMD="${FRACTL_JAVA_CMD:-${JAVA_CMD:-java}}"
+
+## Run the fractl.cli JAR
+$FRACTL_JAVA_CMD $FRACTL_JVM_OPTS -jar ${FRACTL_CLI_JAR} "$@"
