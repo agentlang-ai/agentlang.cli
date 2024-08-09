@@ -1,4 +1,5 @@
 (ns fractl.cli.util
+  (:require [clojure.string :as string])
   (:import (java.io BufferedReader File)))
 
 
@@ -63,10 +64,30 @@
    (System/exit 1)))
 
 
-(defn invalid-project-name? [s]
-  (when-not (->> (seq s)
-                 (every? ^[char] Character/isLetter))
-    "Project-name may only have letters"))
+(def project-name-allowed-delims #{\- \_})
+
+
+(defn invalid-project-name? [^String s]
+  (when-not (and (Character/isLetter ^char (first s))
+                 (Character/isLetter ^char (last s))
+                 (->> (seq s)
+                      (every? #(or (Character/isLetter ^char %)
+                                   (get project-name-allowed-delims %)))))
+    "Project-name may only have letters or dash/underscore between letters"))
+
+
+(defn project-name->component-keyword [^String project-name]
+  (->> (seq project-name)
+       (reduce (fn [[s break?] ch]
+                 (if (project-name-allowed-delims ch)
+                   [s true]    ; exclude delimiter from component-name
+                   [(str s (if break?
+                             (string/upper-case ch)
+                             ch))
+                    false]))
+               ["" true])
+       first
+       keyword))
 
 
 (defn file-exists? [^String filepath]

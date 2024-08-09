@@ -2,7 +2,7 @@
   (:require [clojure.java.io :as io]))
 
 
-(defn emit-app-readme.md [project-name component-name]
+(defn emit-app-readme.md [project-name component-keyword]
   (format "# %s
 
 FIXME: Description
@@ -33,20 +33,20 @@ terms of the Apache License 2.0 which is available at
 https://www.apache.org/licenses/LICENSE-2.0.html.
 "
           project-name
-          (name component-name)
-          (name component-name)))
+          (name component-keyword)
+          (name component-keyword)))
 
 
-(defn emit-app-model.fractl [component-name]
+(defn emit-app-model.fractl [component-keyword]
   (format "{:name %s
  :fractl-version \"0.5.4\"
  :components [%s.Core]
  :dependencies []}"
-          component-name
-          component-name))
+          component-keyword
+          component-keyword))
 
 
-(defn emit-app-core.fractl [component-name]
+(defn emit-app-core.fractl [component-keyword]
   (let []
     (format "(component
   %s.Core)
@@ -55,7 +55,7 @@ https://www.apache.org/licenses/LICENSE-2.0.html.
 
 (dataflow :Greet
  {:Response {:Message '(str \"hello \" :Greet.Name)}})"
-            component-name)))
+            component-keyword)))
 
 
 (defn make-file [filepath content]
