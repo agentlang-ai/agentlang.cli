@@ -18,7 +18,8 @@
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}
-             :dev {:plugins [[lein-shell "0.5.0"]]}}
+             :dev {:plugins [[lein-shell "0.5.0"]]
+                   :prep-tasks [["shell" "mkdir" "-p" "${:user-home}/.fractl/self-installs/"]]}}
   :user-home ~(System/getProperty "user.home")
   :aliases
   {"local"
