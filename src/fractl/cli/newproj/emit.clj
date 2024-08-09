@@ -19,9 +19,9 @@ In another terminal:
 
 ```shell
 $ curl -X POST \\
-    -H 'Content-type: application/json' \\
+    -H 'Content-Type: application/json' \\
     -d '{\"%s.Core/Greet\": {\"Name\": \"Fred\"}}' \\
-    http://localhost:8080/api/%s/Core
+    http://localhost:8080/api/%s.Core/Greet
 ```
 
 ## License
