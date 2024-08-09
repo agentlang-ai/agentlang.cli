@@ -3,6 +3,7 @@
             [clojure.pprint :as pp]
             [clojure.walk :as walk]
             [fractl.cli.core :as core]
+            [fractl.cli.newproj :as newproj]
             [fractl.cli.util :as util]))
 
 
@@ -18,7 +19,7 @@
 (defn command-depstree []
   (let [deps (->> (core/read-model)
                   core/find-dependencies)]
-    (->> (aether/resolve-dependencies :coordinates deps)
+    (->> (core/resolve-dependencies deps)
          (aether/dependency-hierarchy deps)
          (walk/postwalk (fn [form] (if (map? form)
                                      (reduce-kv (fn [result k v]
@@ -38,6 +39,24 @@
     (println classpath)))
 
 
+(defn command-new [[new-type new-name]]
+  (when-not (#{"app" "resolver"} new-type)
+    (util/err-exit "You must supply new-type, e.g. 'app', 'resolver' etc."))
+  (when-not new-name
+    (util/err-exit "You must supply project-name"))
+  (case new-type
+    "app"      (if-let [error (util/invalid-project-name? new-name)]
+                 (util/err-exit "Invalid app name:" error)
+                 (do
+                   (util/err-println "Creating new Fractl app")
+                   (newproj/create-new-app new-name)))
+    "resolver" (if-let [error (util/invalid-project-name? new-name)]
+                 (util/err-exit "Invalid resolver name:" error)
+                 (do
+                   (util/err-println "Creating new Fractl resolver")
+                   (util/err-exit "Not yet implemented")))))
+
+
 (defn command-run [args]
   (let [classpath (-> (core/read-model)
                       core/find-dependencies
@@ -49,7 +68,14 @@
 
 (defn command-help []
   (binding [*out* *err*]
-    (util/err-println "Args: deps|depstree|classpath|run [command-args]")))
+    (util/err-println "Syntax: ftl <command> [command-args]
+
+ftl deps               Fetch dependencies for a Fractl app
+ftl depstree           Print dependency-tree for a Fractl app
+ftl classpath          Print classpath for a Fractl app
+ftl new app <ap-name>  Create a new Fractl app
+ftl run [run-args]     Run a Fractl app
+ftl version            Print ftl version")))
 
 
 (defn process-command
@@ -58,5 +84,6 @@
     "deps"      (command-deps)
     "depstree"  (command-depstree)
     "classpath" (command-classpath)
+    "new"       (command-new args)
     "run"       (command-run args)
     (command-help)))

@@ -1,8 +1,9 @@
 (ns fractl.cli.util
-  (:import (java.io BufferedReader)
-           (java.time Duration)))
+  (:import (java.io BufferedReader File)))
+
 
 (set! *warn-on-reflection* true)
+
 
 (defmacro retry-if-interrupted
   [& body]
@@ -16,10 +17,12 @@
          (recur)
          result#))))
 
+
 (defn apply-err-out
   [f & args]
   (binding [*out* *err*]
     (apply f args)))
+
 
 (defn print-buffer
   "Print the content of supplied BufferedReader. Return true if it printed
@@ -32,17 +35,47 @@
       true)
     false))
 
+
 (defn sleep-millis [millis]
   (try
     (Thread/sleep ^long millis)
     (catch InterruptedException _
       (.interrupt (Thread/currentThread)))))
 
+
 (defn err-print [msg & more]
   (apply apply-err-out print msg more))
+
 
 (defn err-println [msg & more]
   (apply apply-err-out println msg more))
 
+
 (defn err-prn [msg & more]
   (apply apply-err-out prn msg more))
+
+
+(defn err-exit
+  ([]
+   (System/exit 1))
+  ([msg & more]
+   (apply err-println msg more)
+   (System/exit 1)))
+
+
+(defn invalid-project-name? [s]
+  (when-not (->> (seq s)
+                 (every? ^[char] Character/isLetter))
+    "Project-name may only have letters"))
+
+
+(defn file-exists? [^String filepath]
+  (-> (File. filepath)
+      .exists))
+
+
+(defn file-type [^String filepath]
+  (let [f (File. filepath)]
+    (cond
+      (.isDirectory f) "directory"
+      (.isFile f) "file")))

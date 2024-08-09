@@ -35,12 +35,19 @@
          vec)))
 
 
+(defn resolve-dependencies [deps]
+  (aether/resolve-dependencies
+    :coordinates deps
+    :repositories (merge aether/maven-central
+                         {"clojars" "https://clojars.org/repo"})))
+
+
 (defn fetch-dependencies
   [deps]
   (reduce (fn [dep-filenames each-dep]
             (util/err-print "Fetching dependency: ")
             (util/err-prn each-dep)
-            (->> (aether/resolve-dependencies :coordinates [each-dep])
+            (->> (resolve-dependencies [each-dep])
                  aether/dependency-files
                  (map str)
                  (concat dep-filenames)))

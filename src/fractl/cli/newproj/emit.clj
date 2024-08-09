@@ -1,0 +1,63 @@
+(ns fractl.cli.newproj.emit
+  (:require [clojure.java.io :as io]))
+
+
+(defn emit-app-readme.md [project-name component-name]
+  (format "# %s
+
+FIXME: Description
+
+## Usage
+
+Start the app:
+
+```shell
+$ ftl run
+```
+
+In another terminal:
+
+```shell
+$ curl -X POST \\
+    -H 'Content-type: application/json' \\
+    -d '{\"%s.Core/Greet\": {\"Name\": \"Fred\"}}' \\
+    http://localhost:8080/api/%s/Core
+```
+
+## License
+
+Copyright © 2024 FIXME
+
+This program and the accompanying materials are made available under the
+terms of the Apache License 2.0 which is available at
+https://www.apache.org/licenses/LICENSE-2.0.html.
+"
+          project-name
+          (name component-name)
+          (name component-name)))
+
+
+(defn emit-app-model.fractl [component-name]
+  (format "{:name %s
+ :fractl-version \"0.5.4\"
+ :components [%s.Core]
+ :dependencies []}"
+          component-name
+          component-name))
+
+
+(defn emit-app-core.fractl [component-name]
+  (let []
+    (format "(component
+  %s.Core)
+
+(record :Response {:Message :String})
+
+(dataflow :Greet
+ {:Response {:Message '(str \"hello \" :Greet.Name)}})"
+            component-name)))
+
+
+(defn make-file [filepath content]
+  (io/make-parents filepath)
+  (spit filepath content))
