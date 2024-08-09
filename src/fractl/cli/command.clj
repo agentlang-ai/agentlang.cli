@@ -1,5 +1,7 @@
 (ns fractl.cli.command
   (:require [cemerick.pomegranate.aether :as aether]
+            [clojure.edn :as edn]
+            [clojure.java.io :as io]
             [clojure.pprint :as pp]
             [clojure.walk :as walk]
             [fractl.cli.core :as core]
@@ -66,6 +68,14 @@
     (core/run-app classpath args)))
 
 
+(defn command-version []
+  (let [version (-> (io/resource "project.edn")
+                    slurp
+                    (edn/read-string)
+                    :version)]
+    (println version)))
+
+
 (defn command-help []
   (binding [*out* *err*]
     (util/err-println "Syntax: ftl <command> [command-args]
@@ -86,4 +96,5 @@ ftl version            Print ftl version")))
     "classpath" (command-classpath)
     "new"       (command-new args)
     "run"       (command-run args)
+    "version"   (command-version)
     (command-help)))
