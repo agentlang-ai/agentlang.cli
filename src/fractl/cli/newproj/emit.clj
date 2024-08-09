@@ -39,6 +39,7 @@ https://www.apache.org/licenses/LICENSE-2.0.html.
 
 (defn emit-app-model.fractl [component-keyword]
   (format "{:name %s
+ :version \"0.0.1\"
  :fractl-version \"0.5.4\"
  :components [%s.Core]
  :dependencies []}"

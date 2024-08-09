@@ -60,11 +60,15 @@
 
 
 (defn command-run [args]
-  (let [classpath (-> (core/read-model)
+  (let [app-model      (core/read-model)
+        app-version    (:version app-model "(unknown app version)")
+        fractl-version (:fractl-version app-model "(unknown Fractl version)")
+        classpath (-> app-model
                       core/find-dependencies
                       core/fetch-dependencies
                       core/prepare-classpath)]
-    (util/err-println "Starting app")
+    (util/err-println (format "Starting app %s with Fractl %s"
+                              app-version fractl-version))
     (core/run-app classpath args)))
 
 
