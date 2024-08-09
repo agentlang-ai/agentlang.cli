@@ -1,15 +1,15 @@
 (ns fractl.cli.core
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [clojure.pprint :as pp]
             [clojure.string :as string]
-            [clojure.walk :as walk]
             [cemerick.pomegranate.aether :as aether]
             [fractl.cli.util :as util])
   (:import (java.io File)
            (java.util List)))
 
+
 (set! *warn-on-reflection* true)
+
 
 (defn read-model []
   (let [model-filename "model.fractl"
@@ -26,12 +26,14 @@
         (string/replace "'[[" "[[")  ; unquote dependency list to make valid EDN
         edn/read-string)))
 
+
 (defn find-dependencies [model-map]
   (let [fver (:fractl-version model-map)
         deps (:dependencies model-map [])]
     (->> deps
          (cons ['com.github.fractl-io/fractl fver])
          vec)))
+
 
 (defn fetch-dependencies
   [deps]
@@ -45,10 +47,12 @@
           []
           deps))
 
+
 (defn prepare-classpath
   [dep-filenames]
   (->> (distinct dep-filenames)
        (string/join File/pathSeparator)))
+
 
 (defn run-app [classpath args]
   (let [java-cmd (or (System/getenv "JAVA_CMD") "java")
@@ -74,50 +78,3 @@
                     (util/print-buffer out))
         (util/sleep-millis 100)))
     @exit-value))
-
-(defn command-deps []
-  (-> (read-model)
-      find-dependencies
-      fetch-dependencies))
-
-(defn command-depstree []
-  (let [deps (->> (read-model)
-                  find-dependencies)]
-    (->> (aether/resolve-dependencies :coordinates deps)
-         (aether/dependency-hierarchy deps)
-         (walk/postwalk (fn [form] (if (map? form)
-                                     (reduce-kv (fn [result k v]
-                                                  (if (nil? v)
-                                                    (conj result k)
-                                                    (conj result (conj k v))))
-                                                [] form)
-                                     form)))
-         pp/pprint)))
-
-(defn command-classpath []
-  (let [classpath (-> (read-model)
-                      find-dependencies
-                      fetch-dependencies
-                      prepare-classpath)]
-    (println classpath)))
-
-(defn command-run [args]
-  (let [classpath (-> (read-model)
-                      find-dependencies
-                      fetch-dependencies
-                      prepare-classpath)]
-    (util/err-println "Running app")
-    (run-app classpath args)))
-
-(defn command-help []
-  (binding [*out* *err*]
-    (util/err-println "Args: deps|classpath|run [command-args]")))
-
-(defn process-args
-  [& [command & args]]
-  (case command
-    "deps"      (command-deps)
-    "depstree"  (command-depstree)
-    "classpath" (command-classpath)
-    "run"       (command-run args)
-    (command-help)))
