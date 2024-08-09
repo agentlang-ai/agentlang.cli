@@ -64,7 +64,7 @@
                       core/find-dependencies
                       core/fetch-dependencies
                       core/prepare-classpath)]
-    (util/err-println "Running app")
+    (util/err-println "Starting app")
     (core/run-app classpath args)))
 
 

@@ -45,7 +45,7 @@
 (defn fetch-dependencies
   [deps]
   (reduce (fn [dep-filenames each-dep]
-            (util/err-print "Fetching dependency: ")
+            (util/err-print "Resolving dependency: ")
             (util/err-prn each-dep)
             (->> (resolve-dependencies [each-dep])
                  aether/dependency-files
