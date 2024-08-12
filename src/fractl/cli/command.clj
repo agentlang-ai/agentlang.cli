@@ -13,32 +13,36 @@
 
 
 (defn command-deps []
-  (-> (core/read-model)
-      core/find-dependencies
-      core/fetch-dependencies))
+  (or (some-> (core/read-model)
+              core/find-dependencies
+              core/fetch-dependencies)
+      1))
 
 
 (defn command-depstree []
-  (let [deps (->> (core/read-model)
-                  core/find-dependencies)]
-    (->> (core/resolve-dependencies deps)
-         (aether/dependency-hierarchy deps)
-         (walk/postwalk (fn [form] (if (map? form)
-                                     (reduce-kv (fn [result k v]
-                                                  (if (nil? v)
-                                                    (conj result k)
-                                                    (conj result (conj k v))))
-                                                [] form)
-                                     form)))
-         pp/pprint)))
+  (if-let [model (core/read-model)]
+    (let [deps (core/find-dependencies model)]
+      (->> (core/resolve-dependencies deps)
+           (aether/dependency-hierarchy deps)
+           (walk/postwalk (fn [form] (if (map? form)
+                                       (reduce-kv (fn [result k v]
+                                                    (if (nil? v)
+                                                      (conj result k)
+                                                      (conj result (conj k v))))
+                                                  [] form)
+                                       form)))
+           pp/pprint))
+    1))
 
 
 (defn command-classpath []
-  (let [classpath (-> (core/read-model)
-                      core/find-dependencies
-                      core/fetch-dependencies
-                      core/prepare-classpath)]
-    (println classpath)))
+  (if-let [model (core/read-model)]
+    (let [classpath (-> model
+                        core/find-dependencies
+                        core/fetch-dependencies
+                        core/prepare-classpath)]
+      (println classpath))
+    1))
 
 
 (defn command-new [[new-type new-name]]
@@ -97,16 +101,19 @@ ftl version            Print ftl version")))
 
 (defn process-command
   [& [command & args]]
-  (case command
-    "deps"      (command-deps)
-    "depstree"  (command-depstree)
-    "classpath" (command-classpath)
-    "new"       (command-new args)
-    "nrepl"     (command-fractl "Starting nREPL server for app"
-                                "nrepl" args)
-    "repl"      (command-fractl "Starting REPL for app"
-                                "repl" args)
-    "run"       (command-fractl "Starting app"
-                                "run" args)
-    "version"   (command-version)
-    (command-help)))
+  (let [result (case command
+                 "deps" (command-deps)
+                 "depstree" (command-depstree)
+                 "classpath" (command-classpath)
+                 "new" (command-new args)
+                 "nrepl" (command-fractl "Starting nREPL server for app"
+                                         "nrepl" args)
+                 "repl" (command-fractl "Starting REPL for app"
+                                        "repl" args)
+                 "run" (command-fractl "Starting app"
+                                       "run" args)
+                 "version" (command-version)
+                 (command-help))]
+    (when (and (number? result)
+               (integer? result))
+      (System/exit result))))

@@ -17,27 +17,31 @@
     ;; Recognized model.fractl keys:
     ;; :name :version :fractl-version :components :dependencies
     ;;
-    (when-not (.exists model-file) (ex-info "File does not exist" {:file model-filename}))
-    (when-not (.isFile model-file) (ex-info "Not a file" {:file model-filename}))
-    (when-not (.canRead model-file) (ex-info "File is unreadable" {:file model-filename}))
-    (-> model-file
-        io/reader
-        slurp
-        (string/replace "'[[" "[[")  ; unquote dependency list to make valid EDN
-        edn/read-string)))
+    (cond
+      (not (.exists model-file)) (util/err-println (format "ERROR: File %s does not exist"
+                                                           model-filename))
+      (not (.isFile model-file)) (util/err-println (format "ERROR: %s is not a file"
+                                                           model-filename))
+      (not (.canRead model-file)) (util/err-println (format "ERROR: File %s is not readable"
+                                                            model-filename))
+      :else
+      (-> model-file
+          io/reader
+          slurp
+          (string/replace "'[[" "[[")  ; unquote dependency list to make valid EDN
+          edn/read-string))))
 
 
 (defn find-dependencies [model-map]
   (let [fver (:fractl-version model-map)
         deps (:dependencies model-map [])]
-    (when (nil? fver)
-      (throw (ex-info "Fractl version is unspecified in model.fractl" {})))
-    (when-not (string? fver)
-      (throw (ex-info "Fractl version is not a string in model.fractl"
-                      {:fractl-version fver})))
-    (->> deps
-         (cons ['com.github.fractl-io/fractl fver])
-         vec)))
+    (cond
+      (nil? fver) (util/err-println "ERROR: Fractl version is unspecified in model.fractl")
+      (not (string? fver)) (util/err-println "Fractl version is not a string in model.fractl")
+      :else
+      (->> deps
+           (cons ['com.github.fractl-io/fractl fver])
+           vec))))
 
 
 (defn resolve-dependencies [deps]
