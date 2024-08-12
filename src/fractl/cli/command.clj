@@ -59,7 +59,7 @@
                    (util/err-exit "Not yet implemented")))))
 
 
-(defn command-run [args]
+(defn command-fractl [msg-prefix fractl-command args]
   (let [app-model      (core/read-model)
         app-version    (:version app-model "(unknown app version)")
         fractl-version (:fractl-version app-model "(unknown Fractl version)")
@@ -67,9 +67,10 @@
                       core/find-dependencies
                       core/fetch-dependencies
                       core/prepare-classpath)]
-    (util/err-println (format "Starting app %s with Fractl %s"
+    (util/err-println (format "%s %s with Fractl %s"
+                              msg-prefix
                               app-version fractl-version))
-    (core/run-app classpath args)))
+    (core/run-fractl classpath fractl-command args)))
 
 
 (defn command-version []
@@ -88,6 +89,8 @@ ftl deps               Fetch dependencies for a Fractl app
 ftl depstree           Print dependency-tree for a Fractl app
 ftl classpath          Print classpath for a Fractl app
 ftl new app <ap-name>  Create a new Fractl app
+ftl nrepl              Start an nREPL server
+ftl repl               Start a local REPL
 ftl run [run-args]     Run a Fractl app
 ftl version            Print ftl version")))
 
@@ -99,6 +102,11 @@ ftl version            Print ftl version")))
     "depstree"  (command-depstree)
     "classpath" (command-classpath)
     "new"       (command-new args)
-    "run"       (command-run args)
+    "nrepl"     (command-fractl "Starting nREPL server for app"
+                                "nrepl" args)
+    "repl"      (command-fractl "Starting REPL for app"
+                                "repl" args)
+    "run"       (command-fractl "Starting app"
+                                "run" args)
     "version"   (command-version)
     (command-help)))

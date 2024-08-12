@@ -61,10 +61,10 @@
        (string/join File/pathSeparator)))
 
 
-(defn run-app [classpath args]
+(defn run-fractl [classpath command args]
   (let [java-cmd (or (System/getenv "JAVA_CMD") "java")
         ^List
-        pb-args (concat [java-cmd "-cp" classpath "fractl.core" "run"]
+        pb-args (concat [java-cmd "-cp" classpath "fractl.core" command]
                         args)
         pb (-> (ProcessBuilder. pb-args)
                (.inheritIO))
