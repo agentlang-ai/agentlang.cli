@@ -30,6 +30,11 @@
 (defn find-dependencies [model-map]
   (let [fver (:fractl-version model-map)
         deps (:dependencies model-map [])]
+    (when (nil? fver)
+      (throw (ex-info "Fractl version is unspecified in model.fractl" {})))
+    (when-not (string? fver)
+      (throw (ex-info "Fractl version is not a string in model.fractl"
+                      {:fractl-version fver})))
     (->> deps
          (cons ['com.github.fractl-io/fractl fver])
          vec)))
