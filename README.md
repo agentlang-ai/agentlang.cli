@@ -23,6 +23,23 @@ $ ftl classpath
 $ ftl run -c config.edn
 ```
 
+## Docker usage
+
+```shell
+$ docker pull fractlio/fractl.cli:latest
+$ docker run -it fractlio/fractl.cli:latest ftl version
+```
+
+### Create a new app
+
+```shell
+$ docker run -v .:/fractl -it fractlio/fractl.cli:latest ftl new app hello
+$ cd hello
+$ docker run -v .:/fractl -it fractlio/fractl.cli:latest ftl run
+```
+
+Follow the generated `hello/README.md` file for instructions.
+
 ## License
 
 Copyright © 2024 Fractl, Inc

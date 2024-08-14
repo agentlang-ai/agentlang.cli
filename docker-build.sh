@@ -28,12 +28,12 @@ function clean() {
   containerId=$(getContainerId)
   if [ ! -z "$containerId" ]; then
     docker kill $containerId || true
-    docker rm $containerId
+    docker rm -f $containerId
   fi
 
   imageId=$(getImageId)
   if [ ! -z "$imageId" ]; then
-    docker rmi $imageId
+    docker rmi -f $imageId
   fi
 }
 
@@ -63,7 +63,7 @@ function pushToDockerHub() {
       docker tag $IMG_NAME:latest $IMG_REPO:$TAG_NAME && \
       yesOrNo "Push image ${IMG_REPO}:${TAG_NAME}" && \
       docker login && \
-      echo docker push $IMG_REPO:$TAG_NAME
+      docker push $IMG_REPO:$TAG_NAME
 }
 
 function pushVersion() {
