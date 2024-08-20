@@ -11,8 +11,11 @@
 (set! *warn-on-reflection* true)
 
 
-(defn read-model []
-  (let [model-filename "model.fractl"
+(def ^:const current-directory ".")
+
+
+(defn read-model [dirname]
+  (let [model-filename (str dirname "/model.fractl")
         ^File model-file (io/file model-filename)]
     ;; Recognized model.fractl keys:
     ;; :name :version :fractl-version :components :dependencies
@@ -70,12 +73,37 @@
        (string/join File/pathSeparator)))
 
 
-(defn run-fractl [classpath command args]
+(defn run-git-clone [git-repo-uri local-repo-name]
+  (let [^List
+        pb-args ["git" "clone" git-repo-uri local-repo-name]
+        pb (-> (ProcessBuilder. pb-args)
+               (.inheritIO))
+        p (.start pb)
+        err (.errorReader p)
+        out (.inputReader p)
+        exit-value (promise)]
+    (future
+      (try
+        (util/retry-if-interrupted
+          (.waitFor p))
+        (catch Throwable e
+          (.printStackTrace e))
+        (finally
+          (deliver exit-value (.exitValue p)))))
+    (while (not (realized? exit-value))
+      (when-not (or (util/apply-err-out util/print-buffer err)
+                    (util/print-buffer out))
+        (util/sleep-millis 100)))
+    @exit-value))
+
+
+(defn run-fractl [^String dirname classpath command args]
   (let [java-cmd (or (System/getenv "JAVA_CMD") "java")
         ^List
         pb-args (concat [java-cmd "-cp" classpath "fractl.core" command]
                         args)
         pb (-> (ProcessBuilder. pb-args)
+               (.directory (File. dirname))
                (.inheritIO))
         p (.start pb)
         err (.errorReader p)

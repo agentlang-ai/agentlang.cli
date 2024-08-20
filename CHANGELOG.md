@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. This change
 
 ## [0.2.0] - 2024-08-??
 
-- [TODO] Cloning code repo and running as one command
+- Cloning code repo and running as one command
   - `ftl clonerun`
 - [TODO] Improvement to version reporting
   - `ftl version [--<format>]`

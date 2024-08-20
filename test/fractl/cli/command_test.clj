@@ -7,7 +7,7 @@
 
 (deftest test-command-deps
   (testing "Missing model.fractl file"
-    (is (= 1 (command/command-deps))))
+    (is (= 1 (command/command-deps "."))))
   (testing "Unspecified Fractl version in model.fractl"
-    (with-redefs [core/read-model (fn [] {})]
-      (is (= 1 (command/command-deps))))))
+    (with-redefs [core/read-model (fn [_] {})]
+      (is (= 1 (command/command-deps "."))))))
