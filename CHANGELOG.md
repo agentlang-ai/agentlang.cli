@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file. This change
   - `ftl clonerun`
 - Improvement to version reporting
   - `ftl version [<format>]`
-- [TODO] Documentation fixes
+- Documentation fixes
 
 ## [0.1.0] - 2024-08-14
 - Fetching Maven/Clojars dependencies

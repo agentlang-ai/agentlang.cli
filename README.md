@@ -27,15 +27,15 @@ $ ftl run -c config.edn
 
 ```shell
 $ docker pull fractlio/fractl.cli:latest
-$ docker run -it fractlio/fractl.cli:latest ftl version
+$ docker run --rm -it fractlio/fractl.cli:latest ftl version
 ```
 
 ### Create a new app
 
 ```shell
-$ docker run -v .:/fractl -it fractlio/fractl.cli:latest ftl new app hello
+$ docker run --rm -v .:/fractl -it fractlio/fractl.cli:latest ftl new app hello
 $ cd hello
-$ docker run -v .:/fractl -it fractlio/fractl.cli:latest ftl run
+$ docker run --rm -v .:/fractl -p 8080:8080 -it fractlio/fractl.cli:latest ftl run
 ```
 
 Follow the generated `hello/README.md` file for instructions.
