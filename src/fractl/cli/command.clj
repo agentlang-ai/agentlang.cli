@@ -7,7 +7,8 @@
             [clojure.walk :as walk]
             [fractl.cli.core :as core]
             [fractl.cli.newproj :as newproj]
-            [fractl.cli.util :as util]))
+            [fractl.cli.util :as util])
+  (:import (java.io StringWriter)))
 
 
 (set! *warn-on-reflection* true)
@@ -102,12 +103,34 @@
       git-result)))
 
 
-(defn command-version []
-  (let [version (-> (io/resource "project.edn")
-                    slurp
-                    (edn/read-string)
-                    :version)]
-    (println version)))
+(defn command-version [[version-format]]
+  (let [cliapp-version (-> (io/resource "project.edn")
+                        slurp
+                        (edn/read-string)
+                        :version)
+        fractl-version (when-let [model (binding [*err* (StringWriter.)]
+                                          (core/read-model core/current-directory))]
+                         (:fractl-version model))
+        clijvm-version (System/getProperty "java.version")
+        version {:cli-version cliapp-version
+                 :fractl-version fractl-version
+                 :jvm-version clijvm-version}]
+    (case (-> version-format
+              str
+              string/lower-case
+              string/trim)
+      "edn" (pp/pprint version)
+      "json" (printf "{\"cli-version\": \"%s\",
+ \"fractl-version\": %s,
+ \"jvm-version\": \"%s\"}\n"
+                     cliapp-version
+                     (and fractl-version (format "\"%s\"" fractl-version))
+                     clijvm-version)
+      (do
+        (println "CLI version:" cliapp-version)
+        (println "Fractl version:" (or fractl-version "Unavailable"))
+        (println "JVM version:" clijvm-version)))
+    (flush)))
 
 
 (defn command-help []
@@ -122,7 +145,7 @@ ftl new app <ap-name>  Create a new Fractl app
 ftl nrepl              Start an nREPL server
 ftl repl               Start a local REPL
 ftl run [run-args]     Run a Fractl app
-ftl version            Print ftl version")))
+ftl version [format]   Print ftl version (format: edn/json)")))
 
 
 (defn process-command
@@ -142,7 +165,7 @@ ftl version            Print ftl version")))
                  "run" (command-fractl core/current-directory
                                        "Starting app"
                                        "run" args)
-                 "version" (command-version)
+                 "version" (command-version args)
                  (command-help))]
     (when (and (number? result)
                (integer? result))
