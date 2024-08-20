@@ -6,6 +6,14 @@ All notable changes to this project will be documented in this file. This change
 2. Support for multiple source paths (`:model-paths` in `model.fractl`)
 3. Resolver template, using `ftl new resolver <resolver-name>`
 
+## [0.2.0] - 2024-08-??
+
+- [TODO] Cloning code repo and running as one command
+  - `ftl clonerun`
+- [TODO] Improvement to version reporting
+  - `ftl version [--<format>]`
+- [TODO] Documentation fixes
+
 ## [0.1.0] - 2024-08-14
 - Fetching Maven/Clojars dependencies
   - `ftl deps`
