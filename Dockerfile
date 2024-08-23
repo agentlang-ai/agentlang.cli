@@ -13,3 +13,9 @@ WORKDIR /tmp
 RUN ftl new app hello && cd hello && ftl classpath
 
 WORKDIR /fractl
+
+ENV CLONECMD=FIXME
+ENV CLONEURI=FIXME
+
+## See: https://stackoverflow.com/a/58837546
+CMD ["/bin/bash", "-c", "ftl", "$CLONECMD", "$CLONEURI"]

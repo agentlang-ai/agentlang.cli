@@ -13,6 +13,8 @@ All notable changes to this project will be documented in this file. This change
 - Improvement to version reporting
   - `ftl version [<format>]`
 - Documentation fixes
+- Docker image
+  - Add parameterised `CMD` for running apps
 
 ## [0.1.0] - 2024-08-14
 - Fetching Maven/Clojars dependencies
