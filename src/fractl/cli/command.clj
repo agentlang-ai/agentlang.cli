@@ -79,7 +79,7 @@
     (core/run-fractl dirname classpath fractl-command args)))
 
 
-(defn command-clonerun [[repo-uri & args]]
+(defn command-clone [[command repo-uri & args]]
   ;; [ Github ]
   ;; git clone https://oauth2:oauth-key-goes-here@github.com/username/repo.git
   ;; git clone https://username:token@github.com/username/repo.git
@@ -99,7 +99,7 @@
                           core/find-dependencies
                           core/fetch-dependencies
                           core/prepare-classpath)]
-        (core/run-fractl repo-name classpath "run" args))
+        (core/run-fractl repo-name classpath command args))
       git-result)))
 
 
@@ -154,7 +154,9 @@ ftl version [format]   Print ftl version (format: edn/json)")))
                  "deps" (command-deps core/current-directory)
                  "depstree" (command-depstree core/current-directory)
                  "classpath" (command-classpath core/current-directory)
-                 "clonerun" (command-clonerun args)
+                 "clonenrepl" (command-clone (cons "nrepl" args))
+                 "clonerepl" (command-clone (cons "repl" args))
+                 "clonerun" (command-clone (cons "run" args))
                  "new" (command-new args)
                  "nrepl" (command-fractl core/current-directory
                                          "Starting nREPL server for app"

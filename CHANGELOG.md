@@ -9,7 +9,9 @@ All notable changes to this project will be documented in this file. This change
 ## [0.2.0] - 2024-08-??
 
 - Cloning code repo and running as one command
-  - `ftl clonerun`
+  - `ftl clonenrepl`
+  - `ftl clonerepl`
+  - `ftl clonerun` 
 - Improvement to version reporting
   - `ftl version [<format>]`
 - Documentation fixes
