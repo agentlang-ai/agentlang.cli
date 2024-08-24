@@ -14,6 +14,8 @@ All notable changes to this project will be documented in this file. This change
   - `ftl clonerun` 
 - Improvement to version reporting
   - `ftl version [<format>]`
+- Fix for ambiguous fractl version
+  - Rewrite `current`, `:current` and `nil` as `0.5.4`
 - Documentation fixes
 - Docker image
   - Add parameterised `CMD` for running apps

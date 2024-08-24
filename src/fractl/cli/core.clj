@@ -35,8 +35,14 @@
           edn/read-string))))
 
 
+(defn rewrite-fractl-version [version]
+  (if (#{:current "current" nil} version)
+    "0.5.4"
+    version))
+
+
 (defn find-dependencies [model-map]
-  (let [fver (:fractl-version model-map)
+  (let [fver (rewrite-fractl-version (:fractl-version model-map))
         deps (:dependencies model-map [])]
     (cond
       (nil? fver) (util/err-println "ERROR: Fractl version is unspecified in model.fractl")

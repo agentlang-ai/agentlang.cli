@@ -68,7 +68,7 @@
 (defn command-fractl [dirname msg-prefix fractl-command args]
   (let [app-model      (core/read-model dirname)
         app-version    (:version app-model "(unknown app version)")
-        fractl-version (:fractl-version app-model "(unknown Fractl version)")
+        fractl-version (core/rewrite-fractl-version (:fractl-version app-model))
         classpath (-> app-model
                       core/find-dependencies
                       core/fetch-dependencies
