@@ -23,8 +23,8 @@
   :profiles {:uberjar {:aot :all
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}
              :dev {:plugins [[lein-shell "0.5.0"]]
-                   :project-edn {:output-file "resources/project.edn"}
-                   :prep-tasks [["shell" "mkdir" "-p" "${:user-home}/.fractl/self-installs/"]]}}
+                   :project-edn {:output-file "resources/project.edn"}}}
+  :prep-tasks [["shell" "mkdir" "-p" "${:user-home}/.fractl/self-installs/"]]
   :plugins [[lein-project-edn "0.3.0"]]
   :project-edn {:output-file "target/resources/project.edn"}
   :hooks [leiningen.project-edn/activate]
