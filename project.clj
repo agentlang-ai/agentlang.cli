@@ -23,8 +23,8 @@
   :profiles {:uberjar {:aot :all
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}
              :dev {:plugins [[lein-shell "0.5.0"]]
-                   :project-edn {:output-file "resources/project.edn"}}}
-  :prep-tasks [["shell" "mkdir" "-p" "${:user-home}/.fractl/self-installs/"]]
+                   :project-edn {:output-file "resources/project.edn"}}
+             :prep-tasks [["shell" "mkdir" "-p" "${:user-home}/.fractl/self-installs/"]]}
   :plugins [[lein-project-edn "0.3.0"]]
   :project-edn {:output-file "target/resources/project.edn"}
   :hooks [leiningen.project-edn/activate]
@@ -39,4 +39,6 @@
     "native-image" "--report-unsupported-elements-at-runtime"
     "--initialize-at-build-time" "--no-server"
     "-jar" "target/uberjar/${:uberjar-name:-${:name}-${:version}-standalone.jar}"
-    "-H:Name=./target/${:name}"]})
+    "-H:Name=./target/${:name}"]
+   "prep"
+   ["shell" "mkdir" "-p" "${:user-home}/.fractl/self-installs/"]})

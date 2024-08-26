@@ -7,7 +7,7 @@ CLI tool for Fractl applications.
 Install the JAR locally:
 
 ```shell
-$ lein do clean, uberjar, local
+$ lein do clean, uberjar, prep, local
 ```
 
 Include the `bin/ftl` script in your PATH environment variable.
