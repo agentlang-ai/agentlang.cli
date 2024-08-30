@@ -80,6 +80,7 @@
 
 
 (defn run-git-clone [git-repo-uri local-repo-name]
+  (util/err-println "Cloning Git repo" git-repo-uri "into" local-repo-name)
   (let [^List
         pb-args ["git" "clone" git-repo-uri local-repo-name]
         pb (-> (ProcessBuilder. pb-args)
