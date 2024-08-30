@@ -140,6 +140,8 @@
 ftl deps               Fetch dependencies for a Fractl app
 ftl depstree           Print dependency-tree for a Fractl app
 ftl classpath          Print classpath for a Fractl app
+ftl clonenrepl         Clone a (Git) repo and start nREPL server in the app
+ftl clonerepl          Clone a (Git) repo and start REPL in the app
 ftl clonerun           Clone a (Git) repo and run the app
 ftl new app <ap-name>  Create a new Fractl app
 ftl nrepl              Start an nREPL server
@@ -157,6 +159,7 @@ ftl version [format]   Print ftl version (format: edn/json)")))
                  "clonenrepl" (command-clone (cons "nrepl" args))
                  "clonerepl" (command-clone (cons "repl" args))
                  "clonerun" (command-clone (cons "run" args))
+                 "help" (command-help)
                  "new" (command-new args)
                  "nrepl" (command-fractl core/current-directory
                                          "Starting nREPL server for app"
@@ -168,7 +171,11 @@ ftl version [format]   Print ftl version (format: edn/json)")))
                                        "Starting app"
                                        "run" args)
                  "version" (command-version args)
-                 (command-help))]
+                 (do
+                   (if (nil? command)
+                     (util/err-println "ERROR: No command passed")
+                     (util/err-println "ERROR: Unrecognized command" command))
+                   (command-help)))]
     (when (and (number? result)
                (integer? result))
       (System/exit result))))
