@@ -18,4 +18,4 @@ ENV CLONE_CMD=FIXME
 ENV CLONE_URI=FIXME
 
 ## See: https://stackoverflow.com/a/58837546
-CMD ["/bin/bash", "-c", "ftl '$CLONE_CMD' '$CLONE_URI'"]
+CMD ["/bin/bash", "-c", "ftl \"$CLONE_CMD\" \"$CLONE_URI\""]
