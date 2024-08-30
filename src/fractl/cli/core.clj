@@ -36,7 +36,7 @@
 
 
 (defn rewrite-fractl-version [version]
-  (if (#{:current "current" nil} version)
+  (if (contains? #{:current "current" nil} version)
     "0.5.4"
     version))
 

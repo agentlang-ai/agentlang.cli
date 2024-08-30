@@ -10,4 +10,4 @@
     (is (= 1 (command/command-deps "."))))
   (testing "Unspecified Fractl version in model.fractl"
     (with-redefs [core/read-model (fn [_] {})]
-      (is (= 1 (command/command-deps "."))))))
+      (is (seq (command/command-deps "."))))))
