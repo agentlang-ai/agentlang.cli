@@ -24,4 +24,5 @@
                             project-name) (emit/emit-app-model.fractl component-keyword))
     (emit/make-file (format "%s/%s/core.fractl"
                             project-name
-                            project-name) (emit/emit-app-core.fractl component-keyword))))
+                            (util/project-name->component-dirname
+                              project-name)) (emit/emit-app-core.fractl component-keyword))))

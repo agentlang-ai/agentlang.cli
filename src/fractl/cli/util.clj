@@ -67,6 +67,10 @@
 (def project-name-allowed-delims #{\- \_})
 
 
+(defn project-name->component-dirname [^String project-name]
+  (string/replace project-name #"-" "_"))
+
+
 (defn invalid-project-name? [^String s]
   (when-not (and (Character/isLetter ^char (first s))
                  (Character/isLetter ^char (last s))
