@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-FRACTL_CLI_VERSION="0.2.0-SNAPSHOT"
+FRACTL_CLI_VERSION="0.2.0"
 
 ## Determine coordinates
 export FRACTL_HOME="${FRACTL_HOME:-"$HOME/.fractl"}"

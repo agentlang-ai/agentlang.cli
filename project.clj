@@ -1,4 +1,4 @@
-(defproject com.github.fractl-io/fractl.cli "0.2.0-SNAPSHOT"
+(defproject com.github.fractl-io/fractl.cli "0.2.0"
   :description "CLI tool for Fractl applications"
   :url "https://github.com/fractl-io/fractl.cli"
   :license {:name "Apache License 2.0"
