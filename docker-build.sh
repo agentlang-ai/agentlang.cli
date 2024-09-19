@@ -9,7 +9,7 @@ set -e
 
 CTR_NAME="agentlang.cli"
 IMG_NAME="agentlang.cli"
-IMG_REPO="agentlang-ai/agentlang.cli"
+IMG_REPO="agentlang/agentlang.cli"
 
 # Print to STDERR
 function err {
