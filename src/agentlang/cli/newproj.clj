@@ -1,7 +1,7 @@
-(ns fractl.cli.newproj
+(ns agentlang.cli.newproj
   (:require [clojure.string :as string]
-            [fractl.cli.newproj.emit :as emit]
-            [fractl.cli.util :as util]))
+            [agentlang.cli.newproj.emit :as emit]
+            [agentlang.cli.util :as util]))
 
 
 (defn abort-if-file-exists! [project-name]

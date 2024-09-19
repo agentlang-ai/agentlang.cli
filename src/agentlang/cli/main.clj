@@ -1,5 +1,5 @@
-(ns fractl.cli.main
-  (:require [fractl.cli.command :as command])
+(ns agentlang.cli.main
+  (:require [agentlang.cli.command :as command])
   (:gen-class))
 
 (set! *warn-on-reflection* true)

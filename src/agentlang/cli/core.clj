@@ -1,9 +1,9 @@
-(ns fractl.cli.core
+(ns agentlang.cli.core
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.string :as string]
             [cemerick.pomegranate.aether :as aether]
-            [fractl.cli.util :as util])
+            [agentlang.cli.util :as util])
   (:import (java.io File)
            (java.util List)))
 

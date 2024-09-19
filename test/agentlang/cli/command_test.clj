@@ -1,7 +1,7 @@
-(ns fractl.cli.command-test
+(ns agentlang.cli.command-test
   (:require [clojure.test :refer [deftest is testing]]
-            [fractl.cli.command :as command]
-            [fractl.cli.core :as core])
+            [agentlang.cli.command :as command]
+            [agentlang.cli.core :as core])
   (:import (clojure.lang ExceptionInfo)))
 
 

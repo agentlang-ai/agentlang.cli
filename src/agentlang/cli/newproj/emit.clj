@@ -1,4 +1,4 @@
-(ns fractl.cli.newproj.emit
+(ns agentlang.cli.newproj.emit
   (:require [clojure.java.io :as io]))
 
 

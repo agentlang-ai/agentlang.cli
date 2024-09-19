@@ -1,12 +1,12 @@
-(defproject com.github.fractl-io/fractl.cli "0.2.0"
-  :description "CLI tool for Fractl applications"
-  :url "https://github.com/fractl-io/fractl.cli"
+(defproject com.github.agentlang-ai/agentlang.cli "0.3.0"
+  :description "CLI tool for AgentLang applications"
+  :url "https://github.com/agentlang-ai/agentlang.cli"
   :license {:name "Apache License 2.0"
             :url "https://www.apache.org/licenses/LICENSE-2.0.html"}
   :global-vars {*warn-on-reflection* true
                 *assert* true
                 *unchecked-math* :warn-on-boxed}
-  :dependencies [[org.clojure/clojure "1.12.0-rc1"]
+  :dependencies [[org.clojure/clojure "1.12.0"]
                  [org.clojure/tools.cli "1.0.214"]
                  [clj-commons/pomegranate "1.2.24"
                   :exclusions [org.slf4j/jcl-over-slf4j org.slf4j/slf4j-api
@@ -17,8 +17,8 @@
                  [org.apache.maven.wagon/wagon-http "3.5.3"
                   :exclusions [org.slf4j/slf4j-api]]]
   :resource-paths ["target/resources"]
-  ;:main ^:skip-aot fractl.cli.main
-  :main fractl.cli.main
+  ;:main ^:skip-aot agentlang.cli.main
+  :main agentlang.cli.main
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}

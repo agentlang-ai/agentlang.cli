@@ -1,13 +1,13 @@
-(ns fractl.cli.command
+(ns agentlang.cli.command
   (:require [cemerick.pomegranate.aether :as aether]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.string :as string]
             [clojure.pprint :as pp]
             [clojure.walk :as walk]
-            [fractl.cli.core :as core]
-            [fractl.cli.newproj :as newproj]
-            [fractl.cli.util :as util])
+            [agentlang.cli.core :as core]
+            [agentlang.cli.newproj :as newproj]
+            [agentlang.cli.util :as util])
   (:import (java.io StringWriter)))
 
 
