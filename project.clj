@@ -22,8 +22,7 @@
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}
-             :dev {:plugins [[lein-shell "0.5.0"]]
-                   :project-edn {:output-file "resources/project.edn"}}
+             :dev {:plugins [[lein-shell "0.5.0"]]}
              :prep-tasks [["shell" "mkdir" "-p" "${:user-home}/.agentlang/self-installs/"]]}
   :plugins [[lein-project-edn "0.3.0"]]
   :project-edn {:output-file "target/resources/project.edn"}
