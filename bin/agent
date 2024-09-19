@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 
-FRACTL_CLI_VERSION="0.2.0"
+AGENTLANG_CLI_VERSION="0.3.0"
 
 ## Determine coordinates
-export FRACTL_HOME="${FRACTL_HOME:-"$HOME/.fractl"}"
-FRACTL_CLI_JAR="$FRACTL_HOME/self-installs/fractl.cli-$FRACTL_CLI_VERSION-standalone.jar"
+export AGENTLANG_HOME="${AGENTLANG_HOME:-"$HOME/.agentlang"}"
+AGENTLANG_CLI_JAR="$AGENTLANG_HOME/self-installs/agentlang.cli-$AGENTLANG_CLI_VERSION-standalone.jar"
 
 ## Determine `java` executable
 if [ ! -x "$JAVA_CMD" ] && ! type -f java >/dev/null
 then
-    msg "Fractl CLI couldn't find 'java' executable, which is required."
-    msg "Please either set JAVA_CMD or put java (>=1.6) in your \$PATH ($PATH)."
+    msg "AgentLang CLI couldn't find 'java' executable, which is required."
+    msg "Please either set JAVA_CMD or put java (>=21) in your \$PATH ($PATH)."
     exit 1
 fi
-export FRACTL_JAVA_CMD="${FRACTL_JAVA_CMD:-${JAVA_CMD:-java}}"
+export AGENTLANG_JAVA_CMD="${AGENTLANG_JAVA_CMD:-${JAVA_CMD:-java}}"
 
-## Run the fractl.cli JAR
-$FRACTL_JAVA_CMD $FRACTL_JVM_OPTS -jar ${FRACTL_CLI_JAR} "$@"
+## Run the agentlang.cli JAR
+$AGENTLANG_JAVA_CMD $AGENTLANG_JVM_OPTS -jar ${AGENTLANG_CLI_JAR} "$@"

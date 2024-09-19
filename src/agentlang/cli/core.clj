@@ -15,10 +15,10 @@
 
 
 (defn read-model [dirname]
-  (let [model-filename (str dirname "/model.fractl")
+  (let [model-filename (str dirname "/model.al")
         ^File model-file (io/file model-filename)]
-    ;; Recognized model.fractl keys:
-    ;; :name :version :fractl-version :components :dependencies
+    ;; Recognized model.al keys:
+    ;; :name :version :agentlang-version :components :dependencies
     ;;
     (cond
       (not (.exists model-file)) (util/err-println (format "ERROR: File %s does not exist"
@@ -35,21 +35,21 @@
           edn/read-string))))
 
 
-(defn rewrite-fractl-version [version]
+(defn rewrite-agentlang-version [version]
   (if (contains? #{:current "current" nil} version)
     "0.5.4"
     version))
 
 
 (defn find-dependencies [model-map]
-  (let [fver (rewrite-fractl-version (:fractl-version model-map))
+  (let [fver (rewrite-agentlang-version (:agentlang-version model-map))
         deps (:dependencies model-map [])]
     (cond
-      (nil? fver) (util/err-println "ERROR: Fractl version is unspecified in model.fractl")
-      (not (string? fver)) (util/err-println "Fractl version is not a string in model.fractl")
+      (nil? fver) (util/err-println "ERROR: AgentLang version is unspecified in model.al")
+      (not (string? fver)) (util/err-println "AgentLang version is not a string in model.al")
       :else
       (->> deps
-           (cons ['com.github.fractl-io/fractl fver])
+           (cons ['com.github.agentlang-ai/agentlang fver])
            vec))))
 
 
@@ -104,10 +104,10 @@
     @exit-value))
 
 
-(defn run-fractl [^String dirname classpath command args]
+(defn run-agentlang [^String dirname classpath command args]
   (let [java-cmd (or (System/getenv "JAVA_CMD") "java")
         ^List
-        pb-args (concat [java-cmd "-cp" classpath "fractl.core" command]
+        pb-args (concat [java-cmd "-cp" classpath "agentlang.core" command]
                         args)
         pb (-> (ProcessBuilder. pb-args)
                (.directory (File. dirname))
