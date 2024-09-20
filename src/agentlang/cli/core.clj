@@ -37,7 +37,7 @@
 
 (defn rewrite-agentlang-version [version]
   (if (contains? #{:current "current" nil} version)
-    "0.5.4"
+    "0.6.0-alpha1"
     version))
 
 
