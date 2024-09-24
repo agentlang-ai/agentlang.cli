@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file. This change
   - Rename script to `agent`
   - Refactor/rename internal source/test files
 - Target AgentLang (rather than Fractl)
-  - Baseline version `0.6.0-alpha1`
+  - Baseline version `0.6.0-alpha2`
 - Update Clojure dependency to version 1.12.0
 
 ## [0.2.0] - 2024-09-05

@@ -40,7 +40,7 @@ https://www.apache.org/licenses/LICENSE-2.0.html.
 (defn emit-app-model.al [component-keyword]
   (format "{:name %s
  :version \"0.0.1\"
- :agentlang-version \"0.6.0-alpha1\"
+ :agentlang-version \"0.6.0-alpha2\"
  :components [%s.Core]
  :dependencies []}"
           component-keyword
