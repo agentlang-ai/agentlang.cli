@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 
 ###
-## Script to build/push Docker image for fractl.cli
+## Script to build/push Docker image for agentlang.cli
 ##
 ## ./docker-build.sh help
 
 set -e
 
-CTR_NAME="fractl.cli"
-IMG_NAME="fractl.cli"
-IMG_REPO="fractlio/fractl.cli"
+CTR_NAME="agentlang.cli"
+IMG_NAME="agentlang.cli"
+IMG_REPO="agentlang/agentlang.cli"
 
 # Print to STDERR
 function err {

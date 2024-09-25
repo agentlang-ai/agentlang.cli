@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+AGENTLANG_CLI_VERSION="0.3.0"
+
+## Determine coordinates
+export AGENTLANG_HOME="${AGENTLANG_HOME:-"$HOME/.agentlang"}"
+AGENTLANG_CLI_JAR="$AGENTLANG_HOME/self-installs/agentlang.cli-$AGENTLANG_CLI_VERSION-standalone.jar"
+
+## Determine `java` executable
+if [ ! -x "$JAVA_CMD" ] && ! type -f java >/dev/null
+then
+    msg "AgentLang CLI couldn't find 'java' executable, which is required."
+    msg "Please either set JAVA_CMD or put java (>=21) in your \$PATH ($PATH)."
+    exit 1
+fi
+export AGENTLANG_JAVA_CMD="${AGENTLANG_JAVA_CMD:-${JAVA_CMD:-java}}"
+
+## Run the agentlang.cli JAR
+$AGENTLANG_JAVA_CMD $AGENTLANG_JVM_OPTS -jar ${AGENTLANG_CLI_JAR} "$@"

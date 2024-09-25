@@ -1,7 +1,7 @@
-(ns fractl.cli.newproj
+(ns agentlang.cli.newproj
   (:require [clojure.string :as string]
-            [fractl.cli.newproj.emit :as emit]
-            [fractl.cli.util :as util]))
+            [agentlang.cli.newproj.emit :as emit]
+            [agentlang.cli.util :as util]))
 
 
 (defn abort-if-file-exists! [project-name]
@@ -20,9 +20,9 @@
     (emit/make-file (format "%s/README.md"
                             project-name) (emit/emit-app-readme.md project-name
                                                                    component-keyword))
-    (emit/make-file (format "%s/model.fractl"
-                            project-name) (emit/emit-app-model.fractl component-keyword))
-    (emit/make-file (format "%s/%s/core.fractl"
+    (emit/make-file (format "%s/model.al"
+                            project-name) (emit/emit-app-model.al component-keyword))
+    (emit/make-file (format "%s/%s/core.al"
                             project-name
                             (util/project-name->component-dirname
-                              project-name)) (emit/emit-app-core.fractl component-keyword))))
+                              project-name)) (emit/emit-app-core.al component-keyword))))

@@ -1,4 +1,4 @@
-(ns fractl.cli.newproj.emit
+(ns agentlang.cli.newproj.emit
   (:require [clojure.java.io :as io]))
 
 
@@ -37,17 +37,17 @@ https://www.apache.org/licenses/LICENSE-2.0.html.
           (name component-keyword)))
 
 
-(defn emit-app-model.fractl [component-keyword]
+(defn emit-app-model.al [component-keyword]
   (format "{:name %s
  :version \"0.0.1\"
- :fractl-version \"0.5.4\"
+ :agentlang-version \"0.6.0-alpha2\"
  :components [%s.Core]
  :dependencies []}"
           component-keyword
           component-keyword))
 
 
-(defn emit-app-core.fractl [component-keyword]
+(defn emit-app-core.al [component-keyword]
   (let []
     (format "(component
   %s.Core)

@@ -1,6 +1,6 @@
-# fractl.cli
+# agentlang.cli
 
-CLI tool for Fractl applications.
+CLI tool for AgentLang applications.
 
 ## Installation
 
@@ -10,32 +10,32 @@ Install the JAR locally:
 $ lein do clean, uberjar, prep, local
 ```
 
-Include the `bin/ftl` script in your PATH environment variable.
+Include the `bin/agent` script in your PATH environment variable.
 
 ## Usage
 
-Change into the Fractl app directory and run the `ftl` command:
+Change into the AgentLang app directory and run the `agent` command:
 
 ```shell
-$ cd <fractl-app-dir>
-$ ftl help
-$ ftl classpath
-$ ftl run -c config.edn
+$ cd <agentlang-app-dir>
+$ agent help
+$ agent classpath
+$ agent run -c config.edn
 ```
 
 ## Docker usage
 
 ```shell
-$ docker pull fractlio/fractl.cli:latest
-$ docker run --rm -it fractlio/fractl.cli:latest ftl version
+$ docker pull agentlang/agentlang.cli:latest
+$ docker run --rm -it agentlang/agentlang.cli:latest agent version
 ```
 
 ### Create a new app
 
 ```shell
-$ docker run --rm -v .:/fractl -it fractlio/fractl.cli:latest ftl new app hello
+$ docker run --rm -v .:/agentlang -it agentlang/agentlang.cli:latest agent new app hello
 $ cd hello
-$ docker run --rm -v .:/fractl -p 8080:8080 -it fractlio/fractl.cli:latest ftl run
+$ docker run --rm -v .:/agentlang -p 8080:8080 -it agentlang/agentlang.cli:latest agent run
 ```
 
 Follow the generated `hello/README.md` file for instructions.
