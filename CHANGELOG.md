@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file. This change
 2. Support for multiple source paths (`:model-paths` in `model.fractl`)
 3. Resolver template, using `ftl new resolver <resolver-name>`
 
-## [0.3.0] - 2024-09-??
+## [0.3.0] - 2024-09-26
 
 - Rename project to agentlang.cli
   - Rename script to `agent`
