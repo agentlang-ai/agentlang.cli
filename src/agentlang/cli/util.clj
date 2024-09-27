@@ -6,6 +6,10 @@
 (set! *warn-on-reflection* true)
 
 
+(defn throw-ex-info [message data]
+  (throw (ex-info message data)))
+
+
 (defmacro retry-if-interrupted
   [& body]
   `(loop []
@@ -104,3 +108,7 @@
     (cond
       (.isDirectory f) "directory"
       (.isFile f) "file")))
+
+
+(def file-separator File/separator)
+(def path-separator File/pathSeparator)

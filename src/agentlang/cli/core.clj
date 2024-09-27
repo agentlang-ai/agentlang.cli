@@ -12,6 +12,7 @@
 
 
 (def ^:const current-directory ".")
+(def ^:const baseline-version "0.6.0-alpha2")
 
 
 (defn read-model [dirname]
@@ -37,7 +38,7 @@
 
 (defn rewrite-agentlang-version [version]
   (if (contains? #{:current "current" nil} version)
-    "0.6.0-alpha2"
+    baseline-version
     version))
 
 
@@ -51,6 +52,48 @@
       (->> deps
            (cons ['com.github.agentlang-ai/agentlang fver])
            vec))))
+
+
+(declare discover-dependencies)
+(declare clarify-dependencies)
+
+
+(defn discover-dependencies
+  "Return {:jar-deps [] :src-paths []} for a given model (dir)."
+  [model-dir]
+  (let [app-model (read-model model-dir)
+        raw-deps (find-dependencies app-model)
+        {:keys [jar-deps
+                src-paths]} (clarify-dependencies raw-deps)]
+    {:app-model app-model
+     :jar-deps jar-deps
+     :src-paths (-> model-dir
+                    (cons src-paths))}))
+
+
+(defn clarify-dependencies
+  "Return {:jar-deps [] :src-paths []} for a given set of raw dependencies."
+  [raw-deps]
+  (let [analyze-dependency (fn [given-dependency]
+                             (let [[id target & more] given-dependency]
+                               (cond
+                                 (symbol? id) {:jar-deps [given-dependency]}
+                                 (= :fs id)   (discover-dependencies target)
+                                 (= :git id)  (util/throw-ex-info
+                                                "Git Dependency type is not implemented"
+                                                {:git-dependency target})
+                                 :otherwise   (util/throw-ex-info
+                                                "Unsupported dependency type"
+                                                {:dependency given-dependency}))))]
+    (->> raw-deps
+         (reduce (fn [{:keys [jar-deps
+                              src-paths]} raw-dependency]
+                   (let [{new-jar-deps :jar-deps
+                          new-src-paths :src-paths} (analyze-dependency raw-dependency)]
+                     {:jar-deps (concat jar-deps new-jar-deps)
+                      :src-paths (concat src-paths new-src-paths)}))
+                 {:jar-deps []
+                  :src-paths []}))))
 
 
 (defn resolve-dependencies [deps]
@@ -104,7 +147,7 @@
     @exit-value))
 
 
-(defn run-agentlang [^String dirname classpath command args]
+(defn run-agentlang [^String dirname sourcepath classpath command args]
   (let [java-cmd (or (System/getenv "JAVA_CMD") "java")
         ^List
         pb-args (concat [java-cmd "-cp" classpath "agentlang.core" command]
@@ -112,6 +155,8 @@
         pb (-> (ProcessBuilder. pb-args)
                (.directory (File. dirname))
                (.inheritIO))
+        _ (doto (.environment pb)
+            (.put "AGENTLANG_MODEL_PATHS" sourcepath))
         p (.start pb)
         err (.errorReader p)
         out (.inputReader p)

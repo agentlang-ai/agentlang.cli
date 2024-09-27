@@ -15,25 +15,27 @@
 
 
 (defn command-deps [dirname]
-  (or (some-> (core/read-model dirname)
-              core/find-dependencies
-              core/fetch-dependencies)
-      1))
+  (if-let [{:keys [app-model
+                   jar-deps
+                   src-paths]} (core/discover-dependencies dirname)]
+    (core/fetch-dependencies jar-deps)
+    1))
 
 
 (defn command-depstree [dirname ]
-  (if-let [model (core/read-model dirname)]
-    (let [deps (core/find-dependencies model)]
-      (->> (core/resolve-dependencies deps)
-           (aether/dependency-hierarchy deps)
-           (walk/postwalk (fn [form] (if (map? form)
-                                       (reduce-kv (fn [result k v]
-                                                    (if (nil? v)
-                                                      (conj result k)
-                                                      (conj result (conj k v))))
-                                                  [] form)
-                                       form)))
-           pp/pprint))
+  (if-let [{:keys [app-model
+                   jar-deps
+                   src-paths]} (core/discover-dependencies dirname)]
+    (->> (core/resolve-dependencies jar-deps)
+         (aether/dependency-hierarchy jar-deps)
+         (walk/postwalk (fn [form] (if (map? form)
+                                     (reduce-kv (fn [result k v]
+                                                  (if (nil? v)
+                                                    (conj result k)
+                                                    (conj result (conj k v))))
+                                                [] form)
+                                     form)))
+         pp/pprint)
     1))
 
 
@@ -66,17 +68,19 @@
 
 
 (defn command-agentlang [dirname msg-prefix agentlang-command args]
-  (let [app-model      (core/read-model dirname)
+  (let [{:keys [app-model
+                jar-deps
+                src-paths]} (core/discover-dependencies dirname)
         app-version    (:version app-model "(unknown app version)")
         agentlang-version (core/rewrite-agentlang-version (:agentlang-version app-model))
-        classpath (-> app-model
-                      core/find-dependencies
+        sourcepath (string/join util/path-separator src-paths)
+        classpath (-> jar-deps
                       core/fetch-dependencies
                       core/prepare-classpath)]
     (util/err-println (format "%s %s with AgentLang %s"
                               msg-prefix
                               app-version agentlang-version))
-    (core/run-agentlang dirname classpath agentlang-command args)))
+    (core/run-agentlang dirname sourcepath classpath agentlang-command args)))
 
 
 (defn command-clone [[command repo-uri & args]]
@@ -95,11 +99,14 @@
                       last-name))
         git-result (core/run-git-clone repo-uri repo-name)]
     (if (zero? git-result)
-      (let [classpath (-> (core/read-model repo-name)
-                          core/find-dependencies
+      (let [{:keys [app-model
+                    jar-deps
+                    src-paths]} (core/discover-dependencies repo-name)
+            sourcepath (string/join util/path-separator src-paths)
+            classpath (-> jar-deps
                           core/fetch-dependencies
                           core/prepare-classpath)]
-        (core/run-agentlang repo-name classpath command args))
+        (core/run-agentlang repo-name sourcepath classpath command args))
       git-result)))
 
 
