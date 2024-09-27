@@ -6,6 +6,18 @@ All notable changes to this project will be documented in this file. This change
 2. Support for multiple source paths (`:model-paths` in `model.fractl`)
 3. Resolver template, using `ftl new resolver <resolver-name>`
 
+## [0.4.0] - 2024-10-??
+
+- Support for non-JAR dependencies
+  - Local filesystem dependencies
+  - [Todo] Git dependencies
+  - [Todo] Retrofit commands to work with local/Git deps
+    - [Todo] `deps`, `depstree`, `classpath`
+- [Todo] Support for deploying apps
+  - Deploy
+  - Undeploy
+  - Deployment status
+
 ## [0.3.0] - 2024-09-26
 
 - Rename project to agentlang.cli
