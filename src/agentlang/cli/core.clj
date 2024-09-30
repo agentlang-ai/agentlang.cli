@@ -18,7 +18,16 @@
 
 (defn read-model [dirname]
   (let [model-filename (str dirname "/model.al")
-        ^File model-file (io/file model-filename)]
+        ^File model-file (io/file model-filename)
+        unquote-deps (fn [model]
+                       (if (contains? model :dependencies)
+                         (let [deps (:dependencies model)]
+                           (if (and (list? deps)
+                                    (= 'quote (first deps))
+                                    (= 2 (count deps)))
+                             (update model :dependencies second)
+                             model))
+                         model))]
     ;; Recognized model.al keys:
     ;; :name :version :agentlang-version :components :dependencies
     ;;
@@ -34,7 +43,8 @@
           io/reader
           slurp
           (string/replace "'[[" "[[")  ; unquote dependency list to make valid EDN
-          edn/read-string))))
+          edn/read-string
+          unquote-deps))))
 
 
 (defn rewrite-agentlang-version [version]
