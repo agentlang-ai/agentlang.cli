@@ -111,8 +111,8 @@
                               src-paths]} raw-dependency]
                    (let [{new-jar-deps :jar-deps
                           new-src-paths :src-paths} (analyze-dependency raw-dependency)]
-                     {:jar-deps (concat jar-deps new-jar-deps)
-                      :src-paths (concat src-paths new-src-paths)}))
+                     {:jar-deps (distinct (concat jar-deps new-jar-deps))
+                      :src-paths (distinct (concat src-paths new-src-paths))}))
                  {:jar-deps []
                   :src-paths []}))))
 
