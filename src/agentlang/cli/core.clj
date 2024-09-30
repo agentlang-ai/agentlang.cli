@@ -12,6 +12,7 @@
 
 
 (def ^:const current-directory ".")
+(def ^:const git-deps-directory "deps/git")
 (def ^:const baseline-version "0.6.0-alpha2")
 
 
@@ -56,6 +57,16 @@
 
 (declare discover-dependencies)
 (declare clarify-dependencies)
+(declare run-git-clone)
+
+
+(defn resolve-git-dependencies [repo-uri]
+  (.mkdirs (io/file git-deps-directory))                    ; create Git deps base path if absent
+  (let [repo-name (util/git-repo-uri->repo-name repo-uri)
+        repo-path (str git-deps-directory "/" repo-name)]
+    (when-not (.exists (io/file repo-path))
+      (run-git-clone repo-uri repo-path))
+    repo-path))
 
 
 (defn discover-dependencies
@@ -74,14 +85,14 @@
 (defn clarify-dependencies
   "Return {:jar-deps [] :src-paths []} for a given set of raw dependencies."
   [raw-deps]
-  (let [analyze-dependency (fn [given-dependency]
+  (let [analyze-dependency (fn [given-dependency] (prn "Analyzing:" given-dependency) (flush)
                              (let [[id target & more] given-dependency]
                                (cond
                                  (symbol? id) {:jar-deps [given-dependency]}
                                  (= :fs id)   (discover-dependencies target)
-                                 (= :git id)  (util/throw-ex-info
-                                                "Git Dependency type is not implemented"
-                                                {:git-dependency target})
+                                 (= :git id)  (-> target
+                                                  resolve-git-dependencies
+                                                  discover-dependencies)
                                  :otherwise   (util/throw-ex-info
                                                 "Unsupported dependency type"
                                                 {:dependency given-dependency}))))]

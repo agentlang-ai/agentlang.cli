@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file. This change
 
 - Support for non-JAR dependencies
   - Local filesystem dependencies
-  - [Todo] Git dependencies
+  - Git dependencies
   - [Todo] Retrofit commands to work with local/Git deps
     - [Todo] `deps`, `depstree`, `classpath`
 - [Todo] Support for deploying apps
