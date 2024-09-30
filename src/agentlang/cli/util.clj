@@ -112,3 +112,13 @@
 
 (def file-separator File/separator)
 (def path-separator File/pathSeparator)
+
+
+(defn git-repo-uri->repo-name [repo-uri]
+  (let [last-name (-> repo-uri
+                      (string/split #"/")
+                      last)]
+    (if (string/ends-with? last-name ".git")
+      (subs last-name 0
+            (- (count last-name) 4))
+      last-name)))
