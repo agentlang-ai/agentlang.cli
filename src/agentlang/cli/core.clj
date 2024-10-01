@@ -100,7 +100,7 @@
   "Return {:jar-deps [] :src-paths []} for a given set of raw dependencies."
   [raw-deps]
   (let [analyze-dependency (fn [given-dependency]
-                             (util/err-println "Analyzing dependency:" given-dependency)
+                             (util/err-println "Analyzing dependency:" (pr-str given-dependency))
                              (let [[id target & more] given-dependency]
                                (cond
                                  (symbol? id) {:jar-deps [given-dependency]}
