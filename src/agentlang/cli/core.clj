@@ -12,8 +12,18 @@
 
 
 (def ^:const current-directory ".")
+(def ^:const model-filename "model.al")
 (def ^:const git-deps-directory "deps/git")
 (def ^:const baseline-version "0.6.0-alpha2")
+
+
+(defn model-dir-error [dirname]
+  (let [model-filepath (str dirname "/" model-filename)
+        ^File model-file (io/file model-filepath)]
+    (cond
+      (not (.exists model-file))  (format "File %s does not exist" model-filename)
+      (not (.isFile model-file))  (format "%s is not a file" model-filename)
+      (not (.canRead model-file)) (format "File %s is not readable" model-filename))))
 
 
 (defn read-model [dirname]
@@ -31,14 +41,8 @@
     ;; Recognized model.al keys:
     ;; :name :version :agentlang-version :components :dependencies
     ;;
-    (cond
-      (not (.exists model-file)) (util/err-println (format "ERROR: File %s does not exist"
-                                                           model-filename))
-      (not (.isFile model-file)) (util/err-println (format "ERROR: %s is not a file"
-                                                           model-filename))
-      (not (.canRead model-file)) (util/err-println (format "ERROR: File %s is not readable"
-                                                            model-filename))
-      :else
+    (if-let [error-message (model-dir-error dirname)]
+      (util/throw-ex-info error-message {:error :model-dir-error})
       (-> model-file
           io/reader
           slurp

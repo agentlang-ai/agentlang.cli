@@ -14,39 +14,50 @@
 (set! *warn-on-reflection* true)
 
 
+(defmacro when-model-dir [dirname & body]
+  `(if-let [error-message# (core/model-dir-error ~dirname)]
+     (do
+       (util/err-println "ERROR:" error-message#)
+       1)
+     (do
+       ~@body)))
+
+
 (defn command-deps [dirname]
-  (if-let [{:keys [app-model
-                   jar-deps
-                   src-paths]} (core/discover-dependencies dirname)]
-    (core/fetch-dependencies jar-deps)
-    1))
+  (when-model-dir
+    dirname
+    (let [{:keys [app-model
+                  jar-deps
+                  src-paths]} (core/discover-dependencies dirname)]
+      (core/fetch-dependencies jar-deps))))
 
 
-(defn command-depstree [dirname ]
-  (if-let [{:keys [app-model
-                   jar-deps
-                   src-paths]} (core/discover-dependencies dirname)]
-    (->> (core/resolve-dependencies jar-deps)
-         (aether/dependency-hierarchy jar-deps)
-         (walk/postwalk (fn [form] (if (map? form)
-                                     (reduce-kv (fn [result k v]
-                                                  (if (nil? v)
-                                                    (conj result k)
-                                                    (conj result (conj k v))))
-                                                [] form)
-                                     form)))
-         pp/pprint)
-    1))
+(defn command-depstree [dirname]
+  (when-model-dir
+    dirname
+    (let [{:keys [app-model
+                  jar-deps
+                  src-paths]} (core/discover-dependencies dirname)]
+      (->> (core/resolve-dependencies jar-deps)
+           (aether/dependency-hierarchy jar-deps)
+           (walk/postwalk (fn [form] (if (map? form)
+                                       (reduce-kv (fn [result k v]
+                                                    (if (nil? v)
+                                                      (conj result k)
+                                                      (conj result (conj k v))))
+                                                  [] form)
+                                       form)))
+           pp/pprint))))
 
 
 (defn command-classpath [dirname]
-  (if-let [model (core/read-model dirname)]
-    (let [classpath (-> model
+  (when-model-dir
+    dirname
+    (let [classpath (-> (core/read-model dirname)
                         core/find-dependencies
                         core/fetch-dependencies
                         core/prepare-classpath)]
-      (println classpath))
-    1))
+      (println classpath))))
 
 
 (defn command-new [[new-type new-name]]
@@ -109,9 +120,10 @@
                         slurp
                         (edn/read-string)
                         :version)
-        agentlang-version (when-let [model (binding [*err* (StringWriter.)]
-                                             (core/read-model core/current-directory))]
-                            (:agentlang-version model))
+        agentlang-version (when-not (core/model-dir-error core/current-directory)
+                            (when-let [model (binding [*err* (StringWriter.)]
+                                               (core/read-model core/current-directory))]
+                              (:agentlang-version model)))
         clijvm-version (System/getProperty "java.version")
         version {:cli-version cliapp-version
                  :agentlang-version agentlang-version
