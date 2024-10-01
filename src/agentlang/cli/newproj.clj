@@ -33,8 +33,8 @@
   (let [project-name (string/lower-case resolver-name)
         component-keyword (util/project-name->component-keyword resolver-name)]
     (emit/make-file (format "%s/README.md"
-                            project-name) (emit/emit-app-readme.md project-name
-                                                                   component-keyword))
+                            project-name) (emit/emit-resolver-readme.md project-name
+                                                                        component-keyword))
     (emit/make-file (format "%s/model.al"
                             project-name) (emit/emit-app-model.al component-keyword))
     (emit/make-file (format "%s/%s/core.al"

@@ -37,6 +37,42 @@ https://www.apache.org/licenses/LICENSE-2.0.html.
           (name component-keyword)))
 
 
+(defn emit-resolver-readme.md [project-name component-keyword]
+  (format "# %s
+
+FIXME: Description
+
+## Usage
+
+Include as dependency in your app `model.al`:
+
+```clojure
+:dependencies [; other dependencies
+               [:fs \"%s\"]  ; local filesystem path
+               ]
+```
+
+Refer from application code:
+
+```clojure
+(component
+  :AppName.Core
+  {:refer [%s.Core]})
+```
+
+## License
+
+Copyright © 2024 FIXME
+
+This program and the accompanying materials are made available under the
+terms of the Apache License 2.0 which is available at
+https://www.apache.org/licenses/LICENSE-2.0.html.
+"
+          project-name
+          project-name
+          (name component-keyword)))
+
+
 (defn emit-app-model.al [component-keyword]
   (format "{:name %s
  :version \"0.0.1\"
