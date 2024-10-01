@@ -53,8 +53,10 @@
 (defn command-classpath [dirname]
   (when-model-dir
     dirname
-    (let [classpath (-> (core/read-model dirname)
-                        core/find-dependencies
+    (let [{:keys [app-model
+                  jar-deps
+                  src-paths]} (core/discover-dependencies dirname)
+          classpath (-> jar-deps
                         core/fetch-dependencies
                         core/prepare-classpath)]
       (println classpath))))
