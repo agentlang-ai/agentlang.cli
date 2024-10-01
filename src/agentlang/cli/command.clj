@@ -77,7 +77,7 @@
                  (util/err-exit "Invalid resolver name:" error)
                  (do
                    (util/err-println "Creating new Agentlang resolver")
-                   (util/err-exit "Not yet implemented")))))
+                   (newproj/create-new-resolver new-name)))))
 
 
 (defn command-agentlang [dirname msg-prefix agentlang-command args]
