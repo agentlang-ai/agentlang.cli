@@ -16,6 +16,20 @@
 (def ^:const git-deps-directory "deps/git")
 (def ^:const baseline-version "0.6.0-alpha2")
 
+(def ^:const env-var-github-username "GITHUB_USERNAME")
+(def ^:const env-var-github-token "GITHUB_TOKEN")
+
+(defmacro defenvar
+  [varsym env-varname]
+  (assert (symbol? varsym))
+  (assert (string? env-varname))
+  `(def ~varsym (let [ev# ~env-varname]
+                  (first {ev# (System/getenv ev#)}))))
+
+(defenvar envar-git-deps-inject-token "GIT_DEPS_INJECT_TOKEN")
+(defenvar envar-github-username "GITHUB_USERNAME")
+(defenvar envar-github-token    "GITHUB_TOKEN")
+
 
 (defn model-dir-error [dirname]
   (let [model-filepath (str dirname "/" model-filename)
@@ -74,9 +88,42 @@
 (declare run-git-clone)
 
 
+(defn expand-github-repo-uri [github-repo-uri]
+  (let [github-repo-uri-regex #"https://github.com/([a-zA-Z0-9-_]+)/([a-zA-Z0-9-_]+).git"
+        [_ github-org-name
+         github-repo-name] (re-matches github-repo-uri-regex github-repo-uri)
+        github-username (val envar-github-username)
+        github-pa-token (val envar-github-token)]
+    (if (every? some? [github-org-name
+                       github-repo-name
+                       github-username
+                       github-pa-token])
+      (format "https://%s:%s@github.com/%s/%s.git"
+              github-username
+              github-pa-token
+              github-org-name
+              github-repo-name)
+      (do
+        (when-not github-org-name  (util/err-println "Cannot extract Org-name from Github repo:" github-repo-uri))
+        (when-not github-repo-name (util/err-println "Cannot extract Repo-name from Github repo:" github-repo-uri))
+        (when-not github-username  (util/err-println "Missing ENV Var" (key envar-github-username)
+                                                     "for Github repo:" github-repo-uri))
+        (when-not github-pa-token  (util/err-println "Missing ENV Var" (key envar-github-token)
+                                                     "for Github repo:" github-repo-uri))
+        github-repo-uri))))
+
+
 (defn resolve-git-dependencies [repo-uri]
   (.mkdirs (io/file git-deps-directory))                    ; create Git deps base path if absent
-  (let [repo-name (util/git-repo-uri->repo-name repo-uri)
+  (let [repo-uri  (let [git-deps-inject-token? (val envar-git-deps-inject-token)]
+                    (if (and git-deps-inject-token?
+                             (not= "false" git-deps-inject-token?))
+                      (expand-github-repo-uri repo-uri)
+                      (do
+                        (util/err-println "To inject Github token to fetch dependency, define ENV var"
+                                          (str "`" (key envar-git-deps-inject-token) "=true`"))
+                        repo-uri)))
+        repo-name (util/git-repo-uri->repo-name repo-uri)
         repo-path (str git-deps-directory "/" repo-name)]
     (when-not (.exists (io/file repo-path))
       (run-git-clone repo-uri repo-path))

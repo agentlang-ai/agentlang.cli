@@ -14,6 +14,8 @@ All notable changes to this project will be documented in this file. This change
 - Support for non-JAR dependencies
   - Local filesystem dependencies
   - Git dependencies
+    - Inject Github token when env var defined: `GIT_DEPS_INJECT_TOKEN=true`
+    - Use env vars `GITHUB_USERNAME` and `GITHUB_TOKEN` to inject token into Github URI
   - Retrofit commands to work with local/Git deps
     - `deps`, `depstree`, `classpath`
 - Support for creating resolvers
