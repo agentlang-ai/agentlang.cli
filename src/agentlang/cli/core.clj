@@ -113,7 +113,7 @@
         github-repo-uri))))
 
 
-(defn resolve-git-dependencies [repo-uri]
+(defn resolve-git-dependency [repo-uri]
   (.mkdirs (io/file git-deps-directory))                    ; create Git deps base path if absent
   (let [repo-uri  (let [git-deps-inject-token? (val envar-git-deps-inject-token)]
                     (if (and git-deps-inject-token?
@@ -153,7 +153,7 @@
                                  (symbol? id) {:jar-deps [given-dependency]}
                                  (= :fs id)   (discover-dependencies target)
                                  (= :git id)  (-> target
-                                                  resolve-git-dependencies
+                                                  resolve-git-dependency
                                                   discover-dependencies)
                                  :otherwise   (util/throw-ex-info
                                                 "Unsupported dependency type"
