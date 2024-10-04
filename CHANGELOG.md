@@ -2,14 +2,13 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 ## [TODO]
-1. Support for Github based dependencies
-2. Support for multiple source paths (`:model-paths` in `model.fractl`)
-3. Support for deploying apps
+1. Support for multiple source paths (`:model-paths` in `model.fractl`)
+2. Support for deploying apps
    - Deploy
    - Undeploy
    - Deployment status
 
-## [0.4.0] - 2024-10-??
+## [0.4.0] - 2024-10-04
 
 - Support for non-JAR dependencies
   - Local filesystem dependencies
