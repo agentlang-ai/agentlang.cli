@@ -89,7 +89,7 @@
 
 
 (defn expand-github-repo-uri [github-repo-uri]
-  (let [github-repo-uri-regex #"https://github.com/([a-zA-Z0-9-_]+)/([a-zA-Z0-9-_]+).git"
+  (let [github-repo-uri-regex #"https://github.com/([a-zA-Z0-9-_]+)/([a-zA-Z0-9-_]+)(?:.git)?"
         [_ github-org-name
          github-repo-name] (re-matches github-repo-uri-regex github-repo-uri)
         github-username (val envar-github-username)
