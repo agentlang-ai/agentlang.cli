@@ -14,7 +14,7 @@
 (def ^:const current-directory ".")
 (def ^:const model-filename "model.al")
 (def ^:const git-deps-directory "deps/git")
-(def ^:const baseline-version "0.6.0-alpha2")
+(def ^:const baseline-version "0.6.0-alpha3")
 
 (def ^:const env-var-github-username "GITHUB_USERNAME")
 (def ^:const env-var-github-token "GITHUB_TOKEN")
@@ -41,7 +41,7 @@
 
 
 (defn read-model [dirname]
-  (let [model-filename (str dirname "/model.al")
+  (let [model-filename (str dirname "/" model-filename)
         ^File model-file (io/file model-filename)
         unquote-deps (fn [model]
                        (if (contains? model :dependencies)
@@ -75,8 +75,8 @@
   (let [fver (rewrite-agentlang-version (:agentlang-version model-map))
         deps (:dependencies model-map [])]
     (cond
-      (nil? fver) (util/err-println "ERROR: AgentLang version is unspecified in model.al")
-      (not (string? fver)) (util/err-println "AgentLang version is not a string in model.al")
+      (nil? fver) (util/err-println "ERROR: AgentLang version is unspecified in" model-filename)
+      (not (string? fver)) (util/err-println "AgentLang version is not a string in" model-filename)
       :else
       (->> deps
            (cons ['com.github.agentlang-ai/agentlang fver])

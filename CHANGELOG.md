@@ -20,6 +20,8 @@ All notable changes to this project will be documented in this file. This change
     - `deps`, `depstree`, `classpath`
 - Support for creating resolvers
   - Resolver template, using `agent new resolver <resolver-name>`
+- AgentLang version
+  - Baseline version `0.6.0-alpha3`
 
 ## [0.3.0] - 2024-09-26
 
