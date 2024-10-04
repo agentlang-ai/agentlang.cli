@@ -14,18 +14,32 @@
 (set! *warn-on-reflection* true)
 
 
+(defmacro when-model-dir [dirname & body]
+  `(if-let [error-message# (core/model-dir-error ~dirname)]
+     (do
+       (util/err-println "ERROR:" error-message#)
+       1)
+     (do
+       ~@body)))
+
+
 (defn command-deps [dirname]
-  (or (some-> (core/read-model dirname)
-              core/find-dependencies
-              core/fetch-dependencies)
-      1))
+  (when-model-dir
+    dirname
+    (let [{:keys [app-model
+                  jar-deps
+                  src-paths]} (core/discover-dependencies dirname)]
+      (core/fetch-dependencies jar-deps))))
 
 
-(defn command-depstree [dirname ]
-  (if-let [model (core/read-model dirname)]
-    (let [deps (core/find-dependencies model)]
-      (->> (core/resolve-dependencies deps)
-           (aether/dependency-hierarchy deps)
+(defn command-depstree [dirname]
+  (when-model-dir
+    dirname
+    (let [{:keys [app-model
+                  jar-deps
+                  src-paths]} (core/discover-dependencies dirname)]
+      (->> (core/resolve-dependencies jar-deps)
+           (aether/dependency-hierarchy jar-deps)
            (walk/postwalk (fn [form] (if (map? form)
                                        (reduce-kv (fn [result k v]
                                                     (if (nil? v)
@@ -33,18 +47,19 @@
                                                       (conj result (conj k v))))
                                                   [] form)
                                        form)))
-           pp/pprint))
-    1))
+           pp/pprint))))
 
 
 (defn command-classpath [dirname]
-  (if-let [model (core/read-model dirname)]
-    (let [classpath (-> model
-                        core/find-dependencies
+  (when-model-dir
+    dirname
+    (let [{:keys [app-model
+                  jar-deps
+                  src-paths]} (core/discover-dependencies dirname)
+          classpath (-> jar-deps
                         core/fetch-dependencies
                         core/prepare-classpath)]
-      (println classpath))
-    1))
+      (println classpath))))
 
 
 (defn command-new [[new-type new-name]]
@@ -62,21 +77,23 @@
                  (util/err-exit "Invalid resolver name:" error)
                  (do
                    (util/err-println "Creating new Agentlang resolver")
-                   (util/err-exit "Not yet implemented")))))
+                   (newproj/create-new-resolver new-name)))))
 
 
 (defn command-agentlang [dirname msg-prefix agentlang-command args]
-  (let [app-model      (core/read-model dirname)
+  (let [{:keys [app-model
+                jar-deps
+                src-paths]} (core/discover-dependencies dirname)
         app-version    (:version app-model "(unknown app version)")
         agentlang-version (core/rewrite-agentlang-version (:agentlang-version app-model))
-        classpath (-> app-model
-                      core/find-dependencies
+        sourcepath (string/join util/path-separator src-paths)
+        classpath (-> jar-deps
                       core/fetch-dependencies
                       core/prepare-classpath)]
     (util/err-println (format "%s %s with AgentLang %s"
                               msg-prefix
                               app-version agentlang-version))
-    (core/run-agentlang dirname classpath agentlang-command args)))
+    (core/run-agentlang dirname sourcepath classpath agentlang-command args)))
 
 
 (defn command-clone [[command repo-uri & args]]
@@ -86,20 +103,17 @@
   ;; [ GitLab ]
   ;; git clone https://gitlab-ci-token:${Personal Access Tokens}@gitlab.com/username/myrepo.git
   ;; git clone https://oauth2:${Personal Access Tokens}@gitlab.com/username/myrepo.git
-  (let [repo-name (let [last-name (-> repo-uri
-                                      (string/split #"/")
-                                      last)]
-                    (if (string/ends-with? last-name ".git")
-                      (subs last-name 0
-                            (- (count last-name) 4))
-                      last-name))
+  (let [repo-name (util/git-repo-uri->repo-name repo-uri)
         git-result (core/run-git-clone repo-uri repo-name)]
     (if (zero? git-result)
-      (let [classpath (-> (core/read-model repo-name)
-                          core/find-dependencies
+      (let [{:keys [app-model
+                    jar-deps
+                    src-paths]} (core/discover-dependencies repo-name)
+            sourcepath (string/join util/path-separator src-paths)
+            classpath (-> jar-deps
                           core/fetch-dependencies
                           core/prepare-classpath)]
-        (core/run-agentlang repo-name classpath command args))
+        (core/run-agentlang repo-name sourcepath classpath command args))
       git-result)))
 
 
@@ -108,9 +122,10 @@
                         slurp
                         (edn/read-string)
                         :version)
-        agentlang-version (when-let [model (binding [*err* (StringWriter.)]
-                                             (core/read-model core/current-directory))]
-                            (:agentlang-version model))
+        agentlang-version (when-not (core/model-dir-error core/current-directory)
+                            (when-let [model (binding [*err* (StringWriter.)]
+                                               (core/read-model core/current-directory))]
+                              (:agentlang-version model)))
         clijvm-version (System/getProperty "java.version")
         version {:cli-version cliapp-version
                  :agentlang-version agentlang-version

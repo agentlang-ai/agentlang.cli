@@ -1,4 +1,4 @@
-(defproject com.github.agentlang-ai/agentlang.cli "0.3.0"
+(defproject com.github.agentlang-ai/agentlang.cli "0.4.0"
   :description "CLI tool for AgentLang applications"
   :url "https://github.com/agentlang-ai/agentlang.cli"
   :license {:name "Apache License 2.0"

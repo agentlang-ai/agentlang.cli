@@ -4,7 +4,24 @@ All notable changes to this project will be documented in this file. This change
 ## [TODO]
 1. Support for Github based dependencies
 2. Support for multiple source paths (`:model-paths` in `model.fractl`)
-3. Resolver template, using `ftl new resolver <resolver-name>`
+3. Support for deploying apps
+   - Deploy
+   - Undeploy
+   - Deployment status
+
+## [0.4.0] - 2024-10-??
+
+- Support for non-JAR dependencies
+  - Local filesystem dependencies
+  - Git dependencies
+    - Inject Github token when env var defined: `GIT_DEPS_INJECT_TOKEN=true`
+    - Use env vars `GITHUB_USERNAME` and `GITHUB_TOKEN` to inject token into Github URI
+  - Retrofit commands to work with local/Git deps
+    - `deps`, `depstree`, `classpath`
+- Support for creating resolvers
+  - Resolver template, using `agent new resolver <resolver-name>`
+- AgentLang version
+  - Baseline version `0.6.0-alpha3`
 
 ## [0.3.0] - 2024-09-26
 

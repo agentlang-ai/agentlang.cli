@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-AGENTLANG_CLI_VERSION="0.3.0"
+AGENTLANG_CLI_VERSION="0.4.0"
 
 ## Determine coordinates
 export AGENTLANG_HOME="${AGENTLANG_HOME:-"$HOME/.agentlang"}"
