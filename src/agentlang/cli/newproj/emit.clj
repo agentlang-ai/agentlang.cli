@@ -1,5 +1,6 @@
 (ns agentlang.cli.newproj.emit
-  (:require [clojure.java.io :as io]))
+  (:require [clojure.java.io :as io]
+            [agentlang.cli.core :as core]))
 
 
 (defn emit-app-readme.md [project-name component-keyword]
@@ -76,10 +77,11 @@ https://www.apache.org/licenses/LICENSE-2.0.html.
 (defn emit-app-model.al [component-keyword]
   (format "{:name %s
  :version \"0.0.1\"
- :agentlang-version \"0.6.0-alpha2\"
+ :agentlang-version \"%s\"
  :components [%s.Core]
  :dependencies []}"
           component-keyword
+          core/baseline-version
           component-keyword))
 
 
