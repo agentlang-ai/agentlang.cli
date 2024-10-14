@@ -5,6 +5,7 @@
             [clojure.string :as string]
             [clojure.pprint :as pp]
             [clojure.walk :as walk]
+            [agentlang.cli.constant :as const]
             [agentlang.cli.core :as core]
             [agentlang.cli.newproj :as newproj]
             [agentlang.cli.util :as util])
@@ -122,9 +123,9 @@
                         slurp
                         (edn/read-string)
                         :version)
-        agentlang-version (when-not (core/model-dir-error core/current-directory)
+        agentlang-version (when-not (core/model-dir-error const/current-directory)
                             (when-let [model (binding [*err* (StringWriter.)]
-                                               (core/read-model core/current-directory))]
+                                               (core/read-model const/current-directory))]
                               (:agentlang-version model)))
         clijvm-version (System/getProperty "java.version")
         version {:cli-version cliapp-version
@@ -168,21 +169,21 @@ agent version [format]   Print agentlang.cli version (format: edn/json)")))
 (defn process-command
   [& [command & args]]
   (let [result (case command
-                 "deps" (command-deps core/current-directory)
-                 "depstree" (command-depstree core/current-directory)
-                 "classpath" (command-classpath core/current-directory)
+                 "deps" (command-deps const/current-directory)
+                 "depstree" (command-depstree const/current-directory)
+                 "classpath" (command-classpath const/current-directory)
                  "clonenrepl" (command-clone (cons "nrepl" args))
                  "clonerepl" (command-clone (cons "repl" args))
                  "clonerun" (command-clone (cons "run" args))
                  "help" (command-help)
                  "new" (command-new args)
-                 "nrepl" (command-agentlang core/current-directory
+                 "nrepl" (command-agentlang const/current-directory
                                             "Starting nREPL server for app"
                                             "nrepl" args)
-                 "repl" (command-agentlang core/current-directory
+                 "repl" (command-agentlang const/current-directory
                                            "Starting REPL for app"
                                            "repl" args)
-                 "run" (command-agentlang core/current-directory
+                 "run" (command-agentlang const/current-directory
                                           "Starting app"
                                           "run" args)
                  "version" (command-version args)
