@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file. This change
 - [Todo] Support for running individual `.al` scripts
   - Synopsis: `run [-c config.edn] [path/to/script.al]`
 - [Todo] Support for Git dependency branch
-- [Todo] Baseline version `0.6.0-alpha4`
+- Baseline AgentLang version `0.6.0-alpha4`
 - [Todo] Distribution support
   - With JRE (Linux x64/arm64, macOS silicon/x64, Windows x64)
   - Without JRE

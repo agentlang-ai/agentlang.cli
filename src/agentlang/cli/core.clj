@@ -14,7 +14,7 @@
 (def ^:const current-directory ".")
 (def ^:const model-filename "model.al")
 (def ^:const git-deps-directory "deps/git")
-(def ^:const baseline-version "0.6.0-alpha3")
+(def ^:const baseline-version "0.6.0-alpha4")
 
 (def ^:const env-var-github-username "GITHUB_USERNAME")
 (def ^:const env-var-github-token "GITHUB_TOKEN")
