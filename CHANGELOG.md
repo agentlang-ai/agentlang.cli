@@ -8,6 +8,16 @@ All notable changes to this project will be documented in this file. This change
    - Undeploy
    - Deployment status
 
+## [0.5.0] - 2024-10-??
+
+- [Todo] Support for running individual `.al` scripts
+  - Synopsis: `run [-c config.edn] [path/to/script.al]`
+- [Todo] Support for Git dependency branch
+- [Todo] Baseline version `0.6.0-alpha4`
+- [Todo] Distribution support
+  - With JRE (Linux x64/arm64, macOS silicon/x64, Windows x64)
+  - Without JRE
+
 ## [0.4.0] - 2024-10-04
 
 - Support for non-JAR dependencies
