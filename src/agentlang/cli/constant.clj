@@ -6,6 +6,7 @@
 
 (def ^:const current-directory ".")
 (def ^:const model-filename "model.al")
+(def ^:const al-file-extension ".al")
 (def ^:const git-deps-directory "deps/git")
 (def ^:const baseline-version "0.6.0-alpha4")
 
