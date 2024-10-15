@@ -210,8 +210,9 @@
 (defn run-agentlang [^String dirname sourcepath classpath command args]
   (let [java-cmd (or (System/getenv "JAVA_CMD") "java")
         ^List
-        pb-args (concat [java-cmd "-cp" classpath "agentlang.core" command]
-                        args)
+        pb-args (-> [java-cmd "-cp" classpath "agentlang.core"]
+                    (util/conj-some command)                ; conj only if non-nil
+                    (concat args))
         pb (-> (ProcessBuilder. pb-args)
                (.directory (File. dirname))
                (.inheritIO))

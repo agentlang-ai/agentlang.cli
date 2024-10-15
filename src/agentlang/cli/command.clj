@@ -97,14 +97,12 @@
     (core/run-agentlang dirname sourcepath classpath agentlang-command args)))
 
 
-(defn command-run [dirname msg-prefix agentlang-command args]
-  (if (string/ends-with? (last args) const/al-file-extension)
-    (let [jar-deps (core/find-dependencies {:agentlang-version const/baseline-version})
-          classpath (-> jar-deps
-                        core/fetch-dependencies
-                        core/prepare-classpath)]
-      (core/run-agentlang dirname nil classpath "run" args))
-    (command-agentlang dirname msg-prefix agentlang-command args)))
+(defn command-exec [dirname args]
+  (let [jar-deps (core/find-dependencies {:agentlang-version const/baseline-version})
+        classpath (-> jar-deps
+                      core/fetch-dependencies
+                      core/prepare-classpath)]
+    (core/run-agentlang dirname nil classpath nil args)))
 
 
 (defn command-clone [[command repo-uri & args]]
@@ -163,17 +161,18 @@
   (binding [*out* *err*]
     (util/err-println "Syntax: agent <command> [command-args]
 
-agent deps               Fetch dependencies for an AgentLang app
-agent depstree           Print dependency-tree for an AgentLang app
-agent classpath          Print classpath for an AgentLang app
-agent clonenrepl         Clone a (Git) repo and start nREPL server in the app
-agent clonerepl          Clone a (Git) repo and start REPL in the app
-agent clonerun           Clone a (Git) repo and run the app
-agent new app <ap-name>  Create a new AgentLang app
-agent nrepl              Start an nREPL server
-agent repl               Start a local REPL
-agent run [run-args]     Run an AgentLang app
-agent version [format]   Print agentlang.cli version (format: edn/json)")))
+agent deps                 Fetch dependencies for an AgentLang app
+agent depstree             Print dependency-tree for an AgentLang app
+agent classpath            Print classpath for an AgentLang app
+agent clonenrepl           Clone a (Git) repo and start nREPL server in the app
+agent clonerepl            Clone a (Git) repo and start REPL in the app
+agent clonerun             Clone a (Git) repo and run the app
+agent new app <app-name>   Create a new AgentLang app
+agent nrepl                Start an nREPL server
+agent repl                 Start a local REPL
+agent run [run-args]       Run an AgentLang app
+agent exec [args] <script> Execute an AgentLang script
+agent version [format]     Print agentlang.cli version (format: edn/json)")))
 
 
 (defn process-command
@@ -193,9 +192,10 @@ agent version [format]   Print agentlang.cli version (format: edn/json)")))
                  "repl" (command-agentlang const/current-directory
                                            "Starting REPL for app"
                                            "repl" args)
-                 "run" (command-run const/current-directory
-                                    "Starting app"
-                                    "run" args)
+                 "run" (command-agentlang const/current-directory
+                                          "Starting app"
+                                          "run" args)
+                 "exec" (command-exec const/current-directory args)
                  "version" (command-version args)
                  (do
                    (if (nil? command)

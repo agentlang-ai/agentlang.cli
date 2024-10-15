@@ -122,3 +122,10 @@
       (subs last-name 0
             (- (count last-name) 4))
       last-name)))
+
+
+(defn conj-some
+  [coll item]
+  (if (some? item)
+    (conj coll item)
+    coll))

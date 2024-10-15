@@ -10,8 +10,8 @@ All notable changes to this project will be documented in this file. This change
 
 ## [0.5.0] - 2024-10-??
 
-- Support for running individual `.al` scripts
-  - Synopsis: `run [-c config.edn] [path/to/script.al]`
+- Support for running individual AgentLang scripts
+  - Synopsis: `exec [-c config.edn] [path/to/script.al]`
 - [Todo] Support for Git dependency branch
 - Baseline AgentLang version `0.6.0-alpha4`
 - [Todo] Distribution support
