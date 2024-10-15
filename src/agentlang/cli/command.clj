@@ -103,7 +103,7 @@
           classpath (-> jar-deps
                         core/fetch-dependencies
                         core/prepare-classpath)]
-      (core/run-agentlang dirname "" classpath "run" args))
+      (core/run-agentlang dirname nil classpath "run" args))
     (command-agentlang dirname msg-prefix agentlang-command args)))
 
 

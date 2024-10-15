@@ -13,6 +13,8 @@
 (def ^:const env-var-github-username "GITHUB_USERNAME")
 (def ^:const env-var-github-token "GITHUB_TOKEN")
 
+(def ^:const envvar-agentlang-model-paths "AGENTLANG_MODEL_PATHS")
+
 (defmacro defenvar
   [varsym env-varname]
   (assert (symbol? varsym))
