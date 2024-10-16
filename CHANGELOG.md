@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file. This change
 ## [0.5.0] - 2024-10-??
 
 - Support for running individual AgentLang scripts
-  - Synopsis: `exec [-c config.edn] [path/to/script.al]`
+  - Synopsis: `run [-c config.edn] [path/to/script.al]`
 - Git branch and tag support in dependencies and clone-URI
   - As URI fragment identifier: `#<branch>`
   - As URI parameters: `?branch=<branch>` and `?tag=<tag>`
