@@ -113,7 +113,7 @@
   ;; git clone https://gitlab-ci-token:${Personal Access Tokens}@gitlab.com/username/myrepo.git
   ;; git clone https://oauth2:${Personal Access Tokens}@gitlab.com/username/myrepo.git
   (let [repo-name (util/git-repo-uri->repo-name repo-uri)
-        git-result (core/run-git-clone repo-uri repo-name)]
+        git-result (core/run-git-clone (util/parse-repo-uri repo-uri) repo-name)]
     (if (zero? git-result)
       (let [{:keys [app-model
                     jar-deps

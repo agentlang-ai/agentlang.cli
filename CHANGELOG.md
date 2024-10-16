@@ -12,11 +12,13 @@ All notable changes to this project will be documented in this file. This change
 
 - Support for running individual AgentLang scripts
   - Synopsis: `exec [-c config.edn] [path/to/script.al]`
-- [Todo] Support for Git dependency branch
+- Git branch and tag support in dependencies and clone-URI
+  - As URI fragment identifier: `#<branch>`
+  - As URI parameters: `?branch=<branch>` and `?tag=<tag>`
 - Baseline AgentLang version `0.6.0-alpha4`
 - [Todo] Distribution support
-  - With JRE (Linux x64/arm64, macOS silicon/x64, Windows x64)
-  - Without JRE
+  - With/out JRE (Linux x64/arm64, macOS silicon/x64, Windows x64)
+  - With/out Git binaries
 
 ## [0.4.0] - 2024-10-04
 

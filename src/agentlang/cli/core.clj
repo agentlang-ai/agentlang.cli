@@ -102,7 +102,10 @@
 
 (defn resolve-git-dependency [repo-uri]
   (.mkdirs (io/file const/git-deps-directory))                    ; create Git deps base path if absent
-  (let [repo-uri  (let [git-deps-inject-token? (val const/envar-git-deps-inject-token)]
+  (let [{:keys [repo-uri
+                repo-branch
+                repo-tag]} (util/parse-repo-uri repo-uri)
+        repo-uri  (let [git-deps-inject-token? (val const/envar-git-deps-inject-token)]
                     (if (and git-deps-inject-token?
                              (not= "false" git-deps-inject-token?))
                       (expand-github-repo-uri repo-uri)
@@ -113,7 +116,10 @@
         repo-name (util/git-repo-uri->repo-name repo-uri)
         repo-path (str const/git-deps-directory "/" repo-name)]
     (when-not (.exists (io/file repo-path))
-      (run-git-clone repo-uri repo-path))
+      (run-git-clone {:repo-uri    repo-uri
+                      :repo-branch repo-branch
+                      :repo-tag    repo-tag}
+                     repo-path))
     repo-path))
 
 
@@ -182,10 +188,20 @@
        (string/join File/pathSeparator)))
 
 
-(defn run-git-clone [git-repo-uri local-repo-name]
-  (util/err-println "Cloning Git repo" git-repo-uri "into" local-repo-name)
+(defn run-git-clone [{:keys [repo-uri repo-branch repo-tag]} local-repo-name]
+  (util/err-println "Cloning Git repo" repo-uri "into" local-repo-name)
+  (when (and repo-branch repo-tag)
+    (util/err-println "Git repo" repo-uri " is specified with branch" repo-branch "and tag" repo-tag
+                      "- tag will be ignored." ))
   (let [^List
-        pb-args ["git" "clone" git-repo-uri local-repo-name]
+        pb-args (-> ["git" "clone"]
+                    (concat (cond
+                              ;; git clone -b <branch-name> --single-branch <repo-uri>
+                              repo-branch ["-b" repo-branch "--single-branch"]
+                              ;; git clone --depth 1 --branch <tag-name> <repo-uri>
+                              repo-tag    ["--depth" "1" "--branch" repo-tag]
+                              :else []))
+                    (concat [repo-uri local-repo-name]))
         pb (-> (ProcessBuilder. pb-args)
                (.inheritIO))
         p (.start pb)
