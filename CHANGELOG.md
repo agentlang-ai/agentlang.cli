@@ -7,6 +7,11 @@ All notable changes to this project will be documented in this file. This change
    - Deploy
    - Undeploy
    - Deployment status
+3. Replace `git` command usage with JGit
+   - One less package to install for end-user
+4. Distribution with/out JRE (Linux x64/arm64, macOS silicon/x64, Windows x64)
+   - Installer for Linux/macOS
+   - GUI Installer for Windows
 
 ## [0.5.0] - 2024-10-??
 
@@ -16,9 +21,9 @@ All notable changes to this project will be documented in this file. This change
   - As URI fragment identifier: `#<branch>`
   - As URI parameters: `?branch=<branch>` and `?tag=<tag>`
 - Baseline AgentLang version `0.6.0-alpha4`
-- [Todo] Distribution support
-  - With/out JRE (Linux x64/arm64, macOS silicon/x64, Windows x64)
-  - With/out Git binaries
+- Distribution support for Linux/macOS/Unix
+  - Tarball with uberjar built-in
+  - Expects Java21 and Git installed
 
 ## [0.4.0] - 2024-10-04
 

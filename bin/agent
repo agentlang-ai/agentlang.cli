@@ -1,10 +1,25 @@
 #!/usr/bin/env bash
 
+set -e
+
 AGENTLANG_CLI_VERSION="0.5.0"
 
+UBERJAR_NAME="agentlang.cli-$AGENTLANG_CLI_VERSION-standalone.jar"
+SCRIPT_NAME="$0"
+function findJar() {
+  foundHome="${AGENTLANG_HOME:-"$HOME/.agentlang"}"
+  scriptDir=$(dirname "$SCRIPT_NAME")
+  scriptJar="$scriptDir/$UBERJAR_NAME"
+  commonJar="$foundHome/self-installs/$UBERJAR_NAME"
+  if [ -f "$scriptJar" ]; then
+    echo "$scriptJar"
+  else
+    echo "$commonJar"
+  fi
+}
+
 ## Determine coordinates
-export AGENTLANG_HOME="${AGENTLANG_HOME:-"$HOME/.agentlang"}"
-AGENTLANG_CLI_JAR="$AGENTLANG_HOME/self-installs/agentlang.cli-$AGENTLANG_CLI_VERSION-standalone.jar"
+AGENTLANG_CLI_JAR=$(findJar)
 
 ## Determine `java` executable
 if [ ! -x "$JAVA_CMD" ] && ! type -f java >/dev/null
