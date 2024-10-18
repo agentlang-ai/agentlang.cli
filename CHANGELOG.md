@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file. This change
    - Installer for Linux/macOS
    - GUI Installer for Windows
 
-## [0.5.0] - 2024-10-??
+## [0.5.0] - 2024-10-18
 
 - Support for running individual AgentLang scripts
   - Synopsis: `run [-c config.edn] [path/to/script.al]`

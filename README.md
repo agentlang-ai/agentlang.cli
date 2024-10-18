@@ -45,7 +45,7 @@ $ docker run --rm -v .:/agentlang -p 8080:8080 -it agentlang/agentlang.cli:lates
 Follow the generated `hello/README.md` file for instructions.
 
 
-## Build
+## Build from sources
 
 ### Install locally
 
