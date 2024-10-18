@@ -5,6 +5,7 @@
             [clojure.string :as string]
             [clojure.pprint :as pp]
             [clojure.walk :as walk]
+            [agentlang.cli.constant :as const]
             [agentlang.cli.core :as core]
             [agentlang.cli.newproj :as newproj]
             [agentlang.cli.util :as util])
@@ -96,6 +97,16 @@
     (core/run-agentlang dirname sourcepath classpath agentlang-command args)))
 
 
+(defn command-run [dirname msg-prefix agentlang-command args]
+  (if (string/ends-with? (last args) const/al-file-extension)
+    (let [jar-deps (core/find-dependencies {:agentlang-version const/baseline-version})
+          classpath (-> jar-deps
+                        core/fetch-dependencies
+                        core/prepare-classpath)]
+      (core/run-agentlang dirname nil classpath nil args))
+    (command-agentlang dirname msg-prefix agentlang-command args)))
+
+
 (defn command-clone [[command repo-uri & args]]
   ;; [ Github ]
   ;; git clone https://oauth2:oauth-key-goes-here@github.com/username/repo.git
@@ -104,7 +115,7 @@
   ;; git clone https://gitlab-ci-token:${Personal Access Tokens}@gitlab.com/username/myrepo.git
   ;; git clone https://oauth2:${Personal Access Tokens}@gitlab.com/username/myrepo.git
   (let [repo-name (util/git-repo-uri->repo-name repo-uri)
-        git-result (core/run-git-clone repo-uri repo-name)]
+        git-result (core/run-git-clone (util/parse-repo-uri repo-uri) repo-name)]
     (if (zero? git-result)
       (let [{:keys [app-model
                     jar-deps
@@ -122,9 +133,9 @@
                         slurp
                         (edn/read-string)
                         :version)
-        agentlang-version (when-not (core/model-dir-error core/current-directory)
+        agentlang-version (when-not (core/model-dir-error const/current-directory)
                             (when-let [model (binding [*err* (StringWriter.)]
-                                               (core/read-model core/current-directory))]
+                                               (core/read-model const/current-directory))]
                               (:agentlang-version model)))
         clijvm-version (System/getProperty "java.version")
         version {:cli-version cliapp-version
@@ -152,39 +163,39 @@
   (binding [*out* *err*]
     (util/err-println "Syntax: agent <command> [command-args]
 
-agent deps               Fetch dependencies for an AgentLang app
-agent depstree           Print dependency-tree for an AgentLang app
-agent classpath          Print classpath for an AgentLang app
-agent clonenrepl         Clone a (Git) repo and start nREPL server in the app
-agent clonerepl          Clone a (Git) repo and start REPL in the app
-agent clonerun           Clone a (Git) repo and run the app
-agent new app <ap-name>  Create a new AgentLang app
-agent nrepl              Start an nREPL server
-agent repl               Start a local REPL
-agent run [run-args]     Run an AgentLang app
-agent version [format]   Print agentlang.cli version (format: edn/json)")))
+agent deps                 Fetch dependencies for an AgentLang app
+agent depstree             Print dependency-tree for an AgentLang app
+agent classpath            Print classpath for an AgentLang app
+agent clonenrepl           Clone a (Git) repo and start nREPL server in the app
+agent clonerepl            Clone a (Git) repo and start REPL in the app
+agent clonerun             Clone a (Git) repo and run the app
+agent new app <app-name>   Create a new AgentLang app
+agent nrepl                Start an nREPL server
+agent repl                 Start a local REPL
+agent run [run-args]       Run an AgentLang app or script
+agent version [format]     Print agentlang.cli version (format: edn/json)")))
 
 
 (defn process-command
   [& [command & args]]
   (let [result (case command
-                 "deps" (command-deps core/current-directory)
-                 "depstree" (command-depstree core/current-directory)
-                 "classpath" (command-classpath core/current-directory)
+                 "deps" (command-deps const/current-directory)
+                 "depstree" (command-depstree const/current-directory)
+                 "classpath" (command-classpath const/current-directory)
                  "clonenrepl" (command-clone (cons "nrepl" args))
                  "clonerepl" (command-clone (cons "repl" args))
                  "clonerun" (command-clone (cons "run" args))
                  "help" (command-help)
                  "new" (command-new args)
-                 "nrepl" (command-agentlang core/current-directory
+                 "nrepl" (command-agentlang const/current-directory
                                             "Starting nREPL server for app"
                                             "nrepl" args)
-                 "repl" (command-agentlang core/current-directory
+                 "repl" (command-agentlang const/current-directory
                                            "Starting REPL for app"
                                            "repl" args)
-                 "run" (command-agentlang core/current-directory
-                                          "Starting app"
-                                          "run" args)
+                 "run" (command-run const/current-directory
+                                    "Starting app"
+                                    "run" args)
                  "version" (command-version args)
                  (do
                    (if (nil? command)

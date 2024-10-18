@@ -114,11 +114,52 @@
 (def path-separator File/pathSeparator)
 
 
+(defn parse-uri-params [params-string]
+  (->> (string/split params-string #"&")
+       (reduce (fn [m pair]
+                 (->> (string/split pair #"=")
+                      (apply assoc m)))
+               {})))
+
+
+(defn parse-repo-uri
+  "Parse a (Git) repo to determine the base repo URI, branch and tag.
+  The following URI suffixes are supported:
+  Suffix format     Example       Result
+  -------------     -------       ------
+  #<branch>         #foo          {:repo-branch \"foo\" ...}
+  ?branch=<branch>  ?branch=foo   {:repo-branch \"foo\" ...}
+  ?tag=<tag>        ?tag=v0.1     {:repo-tag \"v0.1\"   ...}
+  Result
+  {:repo-uri    ...
+   :repo-branch ...
+   :repo-tag    ...}"
+  [repo-uri]
+  (let [[repo-uri branch-name] (string/split repo-uri #"#" 2)
+        [repo-uri qmark-suffix] (string/split repo-uri #"\?" 2)
+        [branch-name tag-name] (if (some? qmark-suffix)
+                                 (let [uri-params (parse-uri-params qmark-suffix)]
+                                   [(or branch-name
+                                        (get uri-params "branch")) (get uri-params "tag")])
+                                 [branch-name nil])]
+    {:repo-uri repo-uri
+     :repo-branch branch-name
+     :repo-tag tag-name}))
+
+
 (defn git-repo-uri->repo-name [repo-uri]
-  (let [last-name (-> repo-uri
+  (let [last-name (-> (parse-repo-uri repo-uri)
+                      :repo-uri
                       (string/split #"/")
                       last)]
     (if (string/ends-with? last-name ".git")
       (subs last-name 0
             (- (count last-name) 4))
       last-name)))
+
+
+(defn conj-some
+  [coll item]
+  (if (some? item)
+    (conj coll item)
+    coll))

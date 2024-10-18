@@ -1,6 +1,6 @@
 (ns agentlang.cli.newproj.emit
   (:require [clojure.java.io :as io]
-            [agentlang.cli.core :as core]))
+            [agentlang.cli.constant :as const]))
 
 
 (defn emit-app-readme.md [project-name component-keyword]
@@ -81,7 +81,7 @@ https://www.apache.org/licenses/LICENSE-2.0.html.
  :components [%s.Core]
  :dependencies []}"
           component-keyword
-          core/baseline-version
+          const/baseline-version
           component-keyword))
 
 

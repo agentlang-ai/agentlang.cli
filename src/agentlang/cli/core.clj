@@ -3,6 +3,7 @@
             [clojure.java.io :as io]
             [clojure.string :as string]
             [cemerick.pomegranate.aether :as aether]
+            [agentlang.cli.constant :as const]
             [agentlang.cli.util :as util])
   (:import (java.io File)
            (java.util List)))
@@ -11,37 +12,23 @@
 (set! *warn-on-reflection* true)
 
 
-(def ^:const current-directory ".")
-(def ^:const model-filename "model.al")
-(def ^:const git-deps-directory "deps/git")
-(def ^:const baseline-version "0.6.0-alpha3")
-
-(def ^:const env-var-github-username "GITHUB_USERNAME")
-(def ^:const env-var-github-token "GITHUB_TOKEN")
-
-(defmacro defenvar
-  [varsym env-varname]
-  (assert (symbol? varsym))
-  (assert (string? env-varname))
-  `(def ~varsym (let [ev# ~env-varname]
-                  (first {ev# (System/getenv ev#)}))))
-
-(defenvar envar-git-deps-inject-token "GIT_DEPS_INJECT_TOKEN")
-(defenvar envar-github-username "GITHUB_USERNAME")
-(defenvar envar-github-token    "GITHUB_TOKEN")
-
-
-(defn model-dir-error [dirname]
-  (let [model-filepath (str dirname "/" model-filename)
+(defn model-dir-error
+  "Return nil if given directory is a valid AgentLang model directory, error message otherwise."
+  [dirname]
+  (let [model-filepath (str dirname "/" const/model-filename)
         ^File model-file (io/file model-filepath)]
     (cond
-      (not (.exists model-file))  (format "File %s does not exist" model-filename)
-      (not (.isFile model-file))  (format "%s is not a file" model-filename)
-      (not (.canRead model-file)) (format "File %s is not readable" model-filename))))
+      (not (.exists model-file))  (format "File %s does not exist" const/model-filename)
+      (not (.isFile model-file))  (format "%s is not a file" const/model-filename)
+      (not (.canRead model-file)) (format "File %s is not readable" const/model-filename))))
+
+
+(defn valid-model-dir? [dirname]
+  (not (model-dir-error dirname)))
 
 
 (defn read-model [dirname]
-  (let [model-filename (str dirname "/" model-filename)
+  (let [model-filename (str dirname "/" const/model-filename)
         ^File model-file (io/file model-filename)
         unquote-deps (fn [model]
                        (if (contains? model :dependencies)
@@ -67,7 +54,7 @@
 
 (defn rewrite-agentlang-version [version]
   (if (contains? #{:current "current" nil} version)
-    baseline-version
+    const/baseline-version
     version))
 
 
@@ -75,8 +62,8 @@
   (let [fver (rewrite-agentlang-version (:agentlang-version model-map))
         deps (:dependencies model-map [])]
     (cond
-      (nil? fver) (util/err-println "ERROR: AgentLang version is unspecified in" model-filename)
-      (not (string? fver)) (util/err-println "AgentLang version is not a string in" model-filename)
+      (nil? fver) (util/err-println "ERROR: AgentLang version is unspecified in" const/model-filename)
+      (not (string? fver)) (util/err-println "AgentLang version is not a string in" const/model-filename)
       :else
       (->> deps
            (cons ['com.github.agentlang-ai/agentlang fver])
@@ -92,8 +79,8 @@
   (let [github-repo-uri-regex #"https://github.com/([a-zA-Z0-9-_]+)/([a-zA-Z0-9-_]+)(?:.git)?"
         [_ github-org-name
          github-repo-name] (re-matches github-repo-uri-regex github-repo-uri)
-        github-username (val envar-github-username)
-        github-pa-token (val envar-github-token)]
+        github-username (val const/envar-github-username)
+        github-pa-token (val const/envar-github-token)]
     (if (every? some? [github-org-name
                        github-repo-name
                        github-username
@@ -106,27 +93,33 @@
       (do
         (when-not github-org-name  (util/err-println "Cannot extract Org-name from Github repo:" github-repo-uri))
         (when-not github-repo-name (util/err-println "Cannot extract Repo-name from Github repo:" github-repo-uri))
-        (when-not github-username  (util/err-println "Missing ENV Var" (key envar-github-username)
+        (when-not github-username  (util/err-println "Missing ENV Var" (key const/envar-github-username)
                                                      "for Github repo:" github-repo-uri))
-        (when-not github-pa-token  (util/err-println "Missing ENV Var" (key envar-github-token)
+        (when-not github-pa-token  (util/err-println "Missing ENV Var" (key const/envar-github-token)
                                                      "for Github repo:" github-repo-uri))
         github-repo-uri))))
 
 
 (defn resolve-git-dependency [repo-uri]
-  (.mkdirs (io/file git-deps-directory))                    ; create Git deps base path if absent
-  (let [repo-uri  (let [git-deps-inject-token? (val envar-git-deps-inject-token)]
+  (.mkdirs (io/file const/git-deps-directory))                    ; create Git deps base path if absent
+  (let [{:keys [repo-uri
+                repo-branch
+                repo-tag]} (util/parse-repo-uri repo-uri)
+        repo-uri  (let [git-deps-inject-token? (val const/envar-git-deps-inject-token)]
                     (if (and git-deps-inject-token?
                              (not= "false" git-deps-inject-token?))
                       (expand-github-repo-uri repo-uri)
                       (do
                         (util/err-println "To inject Github token to fetch dependency, define ENV var"
-                                          (str "`" (key envar-git-deps-inject-token) "=true`"))
+                                          (str "`" (key const/envar-git-deps-inject-token) "=true`"))
                         repo-uri)))
         repo-name (util/git-repo-uri->repo-name repo-uri)
-        repo-path (str git-deps-directory "/" repo-name)]
+        repo-path (str const/git-deps-directory "/" repo-name)]
     (when-not (.exists (io/file repo-path))
-      (run-git-clone repo-uri repo-path))
+      (run-git-clone {:repo-uri    repo-uri
+                      :repo-branch repo-branch
+                      :repo-tag    repo-tag}
+                     repo-path))
     repo-path))
 
 
@@ -195,10 +188,20 @@
        (string/join File/pathSeparator)))
 
 
-(defn run-git-clone [git-repo-uri local-repo-name]
-  (util/err-println "Cloning Git repo" git-repo-uri "into" local-repo-name)
+(defn run-git-clone [{:keys [repo-uri repo-branch repo-tag]} local-repo-name]
+  (util/err-println "Cloning Git repo" repo-uri "into" local-repo-name)
+  (when (and repo-branch repo-tag)
+    (util/err-println "Git repo" repo-uri " is specified with branch" repo-branch "and tag" repo-tag
+                      "- tag will be ignored." ))
   (let [^List
-        pb-args ["git" "clone" git-repo-uri local-repo-name]
+        pb-args (-> ["git" "clone"]
+                    (concat (cond
+                              ;; git clone -b <branch-name> --single-branch <repo-uri>
+                              repo-branch ["-b" repo-branch "--single-branch"]
+                              ;; git clone --depth 1 --branch <tag-name> <repo-uri>
+                              repo-tag    ["--depth" "1" "--branch" repo-tag]
+                              :else []))
+                    (concat [repo-uri local-repo-name]))
         pb (-> (ProcessBuilder. pb-args)
                (.inheritIO))
         p (.start pb)
@@ -223,13 +226,15 @@
 (defn run-agentlang [^String dirname sourcepath classpath command args]
   (let [java-cmd (or (System/getenv "JAVA_CMD") "java")
         ^List
-        pb-args (concat [java-cmd "-cp" classpath "agentlang.core" command]
-                        args)
+        pb-args (-> [java-cmd "-cp" classpath "agentlang.core"]
+                    (util/conj-some command)                ; conj only if non-nil
+                    (concat args))
         pb (-> (ProcessBuilder. pb-args)
                (.directory (File. dirname))
                (.inheritIO))
-        _ (doto (.environment pb)
-            (.put "AGENTLANG_MODEL_PATHS" sourcepath))
+        _ (when (some? sourcepath) (println "Setting sourcepath:" sourcepath)
+            (doto (.environment pb)
+              (.put const/envvar-agentlang-model-paths sourcepath)))
         p (.start pb)
         err (.errorReader p)
         out (.inputReader p)

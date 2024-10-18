@@ -4,13 +4,16 @@ CLI tool for AgentLang applications.
 
 ## Installation
 
-Install the JAR locally:
+You may download a binary distribution and decompress as follows:
 
 ```shell
-$ lein do clean, uberjar, prep, local
+$ tar xvf agentlang.cli-<version>-bin.tar.gz
 ```
 
-Include the `bin/agent` script in your PATH environment variable.
+Now, you may set PATH environment variable to the created directory and use the `agent` command.
+
+You would need Java 21 and Git installed to use this CLI tool.
+
 
 ## Usage
 
@@ -22,6 +25,7 @@ $ agent help
 $ agent classpath
 $ agent run -c config.edn
 ```
+
 
 ## Docker usage
 
@@ -39,6 +43,36 @@ $ docker run --rm -v .:/agentlang -p 8080:8080 -it agentlang/agentlang.cli:lates
 ```
 
 Follow the generated `hello/README.md` file for instructions.
+
+
+## Build
+
+### Install locally
+
+You may build the sources and install the JAR locally as follows:
+
+```shell
+$ lein do clean, uberjar, prep, local
+```
+
+Include the `bin/agent` script in your PATH environment variable.
+
+### Build distribution
+
+To create a tarball distribution (under `target/dist` directory), run the following:
+
+```shell
+$ ./dist-build.sh
+```
+
+### Docker image
+
+To create a Docker image, run the following:
+
+```shell
+$ ./docker-build.sh help  # commands: clean, build, push-version, push-latest
+```
+
 
 ## License
 
