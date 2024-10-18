@@ -17,7 +17,9 @@ function createUnix() {
   cp bin/agent $UNIX_DIST_HOME
   cp $UBERJAR_PATH $UNIX_DIST_HOME
   cp README.md $UNIX_DIST_HOME
+  cp LICENSE $UNIX_DIST_HOME
   tar czvf $UNIX_TARBALL_NAME -C $UNIX_DIST_BASE ${UNIX_DIST_NAME}
+  echo "Created Unix distribution: $UNIX_TARBALL_NAME"
 }
 
 createUnix
