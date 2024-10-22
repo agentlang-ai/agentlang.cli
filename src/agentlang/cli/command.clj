@@ -148,9 +148,10 @@
                             (when-let [model (binding [*err* (StringWriter.)]
                                                (core/read-model const/current-directory))]
                               (:agentlang-version model)))
+        effective-version (or agentlang-version const/baseline-version)
         clijvm-version (System/getProperty "java.version")
         version {:cli-version cliapp-version
-                 :agentlang-version agentlang-version
+                 :agentlang-version effective-version
                  :jvm-version clijvm-version}]
     (case (-> version-format
               str
@@ -161,11 +162,11 @@
  \"agentlang-version\": %s,
  \"jvm-version\": \"%s\"}\n"
                      cliapp-version
-                     (and agentlang-version (format "\"%s\"" agentlang-version))
+                     (and effective-version (format "\"%s\"" effective-version))
                      clijvm-version)
       (do
         (println "CLI version:" cliapp-version)
-        (println "AgentLang version:" (or agentlang-version "Unavailable"))
+        (println "AgentLang version:" effective-version)
         (println "JVM version:" clijvm-version)))
     (flush)))
 
