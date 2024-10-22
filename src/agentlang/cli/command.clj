@@ -97,13 +97,23 @@
     (core/run-agentlang dirname sourcepath classpath agentlang-command args)))
 
 
+(defn script-execution? [args]
+  (and args
+       (string/ends-with? (last args) const/al-file-extension)
+       args))
+
+
+(defn execute-script [dirname args]
+  (let [jar-deps (core/find-dependencies {:agentlang-version const/baseline-version})
+        classpath (-> jar-deps
+                      core/fetch-dependencies
+                      core/prepare-classpath)]
+    (core/run-agentlang dirname nil classpath nil args)))
+
+
 (defn command-run [dirname msg-prefix agentlang-command args]
-  (if (string/ends-with? (last args) const/al-file-extension)
-    (let [jar-deps (core/find-dependencies {:agentlang-version const/baseline-version})
-          classpath (-> jar-deps
-                        core/fetch-dependencies
-                        core/prepare-classpath)]
-      (core/run-agentlang dirname nil classpath nil args))
+  (if (script-execution? args)
+    (execute-script dirname args)
     (command-agentlang dirname msg-prefix agentlang-command args)))
 
 
@@ -197,11 +207,13 @@ agent version [format]     Print agentlang.cli version (format: edn/json)")))
                                     "Starting app"
                                     "run" args)
                  "version" (command-version args)
-                 (do
-                   (if (nil? command)
-                     (util/err-println "ERROR: No command passed")
-                     (util/err-println "ERROR: Unrecognized command" command))
-                   (command-help)))]
+                 (if-let [script-args (script-execution? (cons command args))]
+                   (execute-script const/current-directory script-args)
+                   (do
+                     (if (nil? command)
+                       (util/err-println "ERROR: No command passed")
+                       (util/err-println "ERROR: Unrecognized command" command))
+                     (command-help))))]
     (when (and (number? result)
                (integer? result))
       (System/exit result))))
