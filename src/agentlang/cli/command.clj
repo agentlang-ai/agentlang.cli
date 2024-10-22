@@ -98,9 +98,10 @@
 
 
 (defn script-execution? [args]
-  (and args
-       (string/ends-with? (last args) const/al-file-extension)
-       args))
+  (let [script-name (last args)]
+    (and script-name
+         (string/ends-with? script-name const/al-file-extension)
+         args)))
 
 
 (defn execute-script [dirname args]
@@ -183,7 +184,8 @@ agent new app <app-name>   Create a new AgentLang app
 agent nrepl                Start an nREPL server
 agent repl                 Start a local REPL
 agent run [run-args]       Run an AgentLang app or script
-agent version [format]     Print agentlang.cli version (format: edn/json)")))
+agent version [format]     Print agentlang.cli version (format: edn/json)
+agent [options] <script>   Run an AgentLang script")))
 
 
 (defn process-command
@@ -207,12 +209,14 @@ agent version [format]     Print agentlang.cli version (format: edn/json)")))
                                     "Starting app"
                                     "run" args)
                  "version" (command-version args)
+                 nil (do
+                       (util/err-println "ERROR: No command passed")
+                       (command-help))
+                 ;; command is non-nil now
                  (if-let [script-args (script-execution? (cons command args))]
                    (execute-script const/current-directory script-args)
                    (do
-                     (if (nil? command)
-                       (util/err-println "ERROR: No command passed")
-                       (util/err-println "ERROR: Unrecognized command" command))
+                     (util/err-println "ERROR: Unrecognized command" command)
                      (command-help))))]
     (when (and (number? result)
                (integer? result))
