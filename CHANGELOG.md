@@ -17,7 +17,7 @@ All notable changes to this project will be documented in this file. This change
 
 - Fix `bin/agent` script for symlink
 - Enable script execution without a command
-- [Todo] Baseline AgentLang version `0.6.0` (GA)
+- Baseline AgentLang version `0.6.0` (GA)
 
 ## [0.5.0] - 2024-10-18
 
