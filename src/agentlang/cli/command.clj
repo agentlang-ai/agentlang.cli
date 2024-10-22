@@ -175,18 +175,18 @@
   (binding [*out* *err*]
     (util/err-println "Syntax: agent <command> [command-args]
 
-agent deps                      Fetch dependencies for an AgentLang app
-agent depstree                  Print dependency-tree for an AgentLang app
-agent classpath                 Print classpath for an AgentLang app
-agent clonenrepl <git-url>      Clone a (Git) repo and start nREPL server in the app
-agent clonerepl <git-url>       Clone a (Git) repo and start REPL in the app
-agent clonerun <git-url> [args] Clone a (Git) repo and run the app
-agent new app <app-name>        Create a new AgentLang app
-agent nrepl                     Start an nREPL server
-agent repl                      Start a local REPL
-agent run [run-args]            Run an AgentLang app or script
-agent version [format]          Print agentlang.cli version (format: edn/json)
-agent [options] <script>        Run an AgentLang script")))
+agent deps                          Fetch dependencies for an AgentLang app
+agent depstree                      Print dependency-tree for an AgentLang app
+agent classpath                     Print classpath for an AgentLang app
+agent clonenrepl <git-url>          Clone a (Git) repo and start nREPL server in the app
+agent clonerepl <git-url>           Clone a (Git) repo and start REPL in the app
+agent clonerun <git-url> [args]     Clone a (Git) repo and run the app
+agent new app|resolver <name>       Create a new AgentLang app or resolver
+agent nrepl                         Start an nREPL server
+agent repl                          Start a local REPL
+agent run [run-args]                Run an AgentLang app or script
+agent version [format]              Print agentlang.cli version (format: edn/json)
+agent [options] <path/to/script.al> Run an AgentLang script")))
 
 
 (defn process-command
