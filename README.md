@@ -2,6 +2,9 @@
 
 CLI tool for AgentLang applications.
 
+Project home: https://github.com/agentlang-ai/agentlang.cli
+
+
 ## Installation
 
 You may download a binary distribution and decompress as follows:
@@ -25,6 +28,39 @@ $ agent help
 $ agent classpath
 $ agent run -c config.edn
 ```
+
+### Project dependencies
+
+The following dependency formats are supported:
+
+JAR (Maven/Clojars) dependency:
+```clojure
+[foo/bar "version"]
+[foo "version"]
+```
+
+Filesystem dependency (must be an AgentLang project):
+```clojure
+[:fs "path/to/dependency"]
+```
+
+Git dependency (must be an AgentLang project):
+```clojure
+[:git "<git-uri>"]                  ; default branch
+[:git "<git-url>#<branch>"]         ; repo at specified branch
+[:git "<git-url>?branch=<branch>"]  ; repo at specified branch
+[:git "<git-url>?tag=<tag>"]        ; repo at specified tag
+```
+
+### Environment variables
+
+The following environment variables are interpreted:
+
+| Environment variable    | Value        | Description                                                  |
+|-------------------------|--------------|--------------------------------------------------------------|
+| `GIT_DEPS_INJECT_TOKEN` | `true`       | Enables auto-injection of Git credentials into private repos |
+| `GITHUB_USERNAME`       | `<username>` | Github username to be injected in the repo URL               |
+| `GITHUB_TOKEN`          | `<token>`    | Github (personal access) token to be injected in the repo URL| 
 
 
 ## Docker usage

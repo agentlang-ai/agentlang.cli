@@ -181,7 +181,7 @@ agent classpath                     Print classpath for an AgentLang app
 agent clonenrepl <git-url>          Clone a (Git) repo and start nREPL server in the app
 agent clonerepl <git-url>           Clone a (Git) repo and start REPL in the app
 agent clonerun <git-url> [args]     Clone a (Git) repo and run the app
-agent new app|resolver <name>       Create a new AgentLang app or resolver
+agent new <project-type> <name>     Create a new AgentLang app/resolver (type: app/resolver)
 agent nrepl                         Start an nREPL server
 agent repl                          Start a local REPL
 agent run [run-args]                Run an AgentLang app or script
