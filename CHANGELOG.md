@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file. This change
    - Installer for Linux/macOS
    - GUI Installer for Windows
 
-## [0.6.0] - 2024-10-??
+## [0.6.0] - 2024-10-22
 
 - Fix `bin/agent` script for symlink
 - Enable script execution without a command
