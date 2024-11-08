@@ -173,5 +173,6 @@
 (defn absolute-file-path?
   [path]
   (if windows?
-    (string/starts-with? (subs path 1) ":\\")
+    (or (string/starts-with? path "\\")
+        (string/starts-with? (subs path 1) ":\\"))
     (string/starts-with? path "/")))
