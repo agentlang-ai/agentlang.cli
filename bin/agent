@@ -2,7 +2,7 @@
 
 set -e
 
-AGENTLANG_CLI_VERSION="0.6.0"
+AGENTLANG_CLI_VERSION="0.6.1"
 
 UBERJAR_NAME="agentlang.cli-$AGENTLANG_CLI_VERSION-standalone.jar"
 SCRIPT_NAME=`realpath "$0"`  # dereference if executable is a symlink
