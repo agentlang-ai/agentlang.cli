@@ -163,3 +163,15 @@
   (if (some? item)
     (conj coll item)
     coll))
+
+
+(def ^:const windows? (-> (System/getProperty "os.name")
+                          string/lower-case
+                          (string/starts-with? "win")))
+
+
+(defn absolute-file-path?
+  [path]
+  (if windows?
+    (string/starts-with? (subs path 1) ":\\")
+    (string/starts-with? path "/")))
