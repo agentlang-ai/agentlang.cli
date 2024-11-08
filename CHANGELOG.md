@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file. This change
 ## [0.6.1] - 2024-11-??
 
 - Fix `:fs` dependency resolution for clone use-case
+- Baseline AgentLang version `0.6.1-alpha1`
 
 ## [0.6.0] - 2024-10-22
 
