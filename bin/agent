@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 set -e
+#set -x
 
 AGENTLANG_CLI_VERSION="0.6.1"
 
