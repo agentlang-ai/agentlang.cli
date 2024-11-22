@@ -88,6 +88,9 @@
         app-version    (:version app-model "(unknown app version)")
         agentlang-version (core/rewrite-agentlang-version (:agentlang-version app-model))
         sourcepath (->> src-paths
+                        (mapv util/make-parent-path)
+                        (filter some?)
+                        distinct
                         (mapv util/make-absolute-file-path)
                         (string/join util/path-separator))
         classpath (-> jar-deps
@@ -134,6 +137,9 @@
                     jar-deps
                     src-paths]} (core/discover-dependencies repo-name)
             sourcepath (->> src-paths
+                            (mapv util/make-parent-path)
+                            (filter some?)
+                            distinct
                             (mapv util/make-absolute-file-path)
                             (string/join util/path-separator))
             classpath (-> jar-deps

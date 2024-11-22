@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file. This change
 
 - Fix `:fs` dependency resolution for clone use-case
 - Baseline AgentLang version `0.6.1-alpha8`
+- Set `AGENTLANG_MODEL_PATHS` to only the dependency parents
 
 ## [0.6.0] - 2024-10-22
 

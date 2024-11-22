@@ -182,3 +182,22 @@
   [^String relative-path]
   (-> (File. relative-path)
       (.getAbsolutePath)))
+
+
+(defn make-parent-path
+  [^String path]
+  (-> (File. path)
+      (.getParent)))
+
+
+(defn prn-> [x & more]
+  (prn x)
+  x)
+
+
+(defn prn->> [x & more]
+  (let [y (->> more
+               (cons x)
+               last)]
+    (prn y)
+    y))
