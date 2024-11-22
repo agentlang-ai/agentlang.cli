@@ -8,7 +8,7 @@
 (def ^:const model-filename "model.al")
 (def ^:const al-file-extension ".al")
 (def ^:const git-deps-directory "deps/git")
-(def ^:const baseline-version "0.6.1-alpha6")
+(def ^:const baseline-version "0.6.1-alpha7")
 
 (def ^:const env-var-github-username "GITHUB_USERNAME")
 (def ^:const env-var-github-token "GITHUB_TOKEN")
