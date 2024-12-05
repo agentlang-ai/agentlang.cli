@@ -117,6 +117,11 @@
     (execute-script dirname args)
     (command-agentlang dirname msg-prefix agentlang-command args)))
 
+(defn command-migrate [dirname msg-prefix agentlang-command args]
+  (if (script-execution? args)
+    (execute-script dirname args)
+    (command-agentlang dirname msg-prefix agentlang-command args)))
+
 
 (defn command-clone [[command repo-uri & args]]
   ;; [ Github ]
@@ -185,6 +190,8 @@ agent new <project-type> <name>     Create a new AgentLang app/resolver (type: a
 agent nrepl                         Start an nREPL server
 agent repl                          Start a local REPL
 agent run [run-args]                Run an AgentLang app or script
+agent migrate MODEL-NAME [git/local] [branch/path]         
+                                    Migrate database given previous version of the app
 agent version [format]              Print agentlang.cli version (format: edn/json)
 agent [options] <path/to/script.al> Run an AgentLang script")))
 
@@ -209,6 +216,9 @@ agent [options] <path/to/script.al> Run an AgentLang script")))
                  "run" (command-run const/current-directory
                                     "Starting app"
                                     "run" args)
+                 "migrate" (command-migrate const/current-directory
+                                    "Migrating database"
+                                    "migrate" args)
                  "version" (command-version args)
                  nil (do
                        (util/err-println "ERROR: No command passed")
