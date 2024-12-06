@@ -18,6 +18,7 @@ All notable changes to this project will be documented in this file. This change
 - Fix `:fs` dependency resolution for clone use-case
 - Baseline AgentLang version `0.6.1`
 - Set `AGENTLANG_MODEL_PATHS` to only the dependency parents
+- Clone and build Agentlang `main` branch in the Docker image
 
 ## [0.6.0] - 2024-10-22
 
