@@ -129,7 +129,7 @@
   (let [app-model (read-model model-dir)
         raw-deps (find-dependencies app-model)
         {:keys [jar-deps
-                src-paths]} (clarify-dependencies raw-deps)]
+                src-paths]} (clarify-dependencies model-dir raw-deps)]
     {:app-model app-model
      :jar-deps jar-deps
      :src-paths (-> model-dir
@@ -138,13 +138,15 @@
 
 (defn clarify-dependencies
   "Return {:jar-deps [] :src-paths []} for a given set of raw dependencies."
-  [raw-deps]
+  [model-dir raw-deps]
   (let [analyze-dependency (fn [given-dependency]
                              (util/err-println "Analyzing dependency:" (pr-str given-dependency))
                              (let [[id target & more] given-dependency]
                                (cond
                                  (symbol? id) {:jar-deps [given-dependency]}
-                                 (= :fs id)   (discover-dependencies target)
+                                 (= :fs id)   (discover-dependencies (if (util/absolute-file-path? target)
+                                                                       target
+                                                                       (str model-dir "/" target)))
                                  (= :git id)  (-> target
                                                   resolve-git-dependency
                                                   discover-dependencies)

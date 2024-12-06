@@ -163,3 +163,41 @@
   (if (some? item)
     (conj coll item)
     coll))
+
+
+(def ^:const windows? (-> (System/getProperty "os.name")
+                          string/lower-case
+                          (string/starts-with? "win")))
+
+
+(defn absolute-file-path?
+  [path]
+  (if windows?
+    (or (string/starts-with? path "\\")
+        (string/starts-with? (subs path 1) ":\\"))
+    (string/starts-with? path "/")))
+
+
+(defn make-absolute-file-path
+  [^String relative-path]
+  (-> (File. relative-path)
+      (.getAbsolutePath)))
+
+
+(defn make-parent-path
+  [^String path]
+  (-> (File. path)
+      (.getParent)))
+
+
+(defn prn-> [x & more]
+  (prn x)
+  x)
+
+
+(defn prn->> [x & more]
+  (let [y (->> more
+               (cons x)
+               last)]
+    (prn y)
+    y))
