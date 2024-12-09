@@ -13,6 +13,10 @@ All notable changes to this project will be documented in this file. This change
    - Installer for Linux/macOS
    - GUI Installer for Windows
 
+## [0.6.2] - 2024-12-??
+
+- [Todo] Baseline AgentLang version `0.6.2-alpha`
+
 ## [0.6.1] - 2024-12-06
 
 - Fix `:fs` dependency resolution for clone use-case
