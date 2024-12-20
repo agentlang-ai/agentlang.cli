@@ -7,7 +7,7 @@ Project home: https://github.com/agentlang-ai/agentlang.cli
 
 ## Installation
 
-You may download a binary distribution and decompress as follows:
+You may [download a binary distribution](https://github.com/agentlang-ai/agentlang.cli/releases) and decompress as follows:
 
 ```shell
 $ tar xvf agentlang.cli-<version>-bin.tar.gz
