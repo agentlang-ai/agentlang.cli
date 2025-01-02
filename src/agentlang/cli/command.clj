@@ -195,6 +195,7 @@ agent new <project-type> <name>     Create a new AgentLang app/resolver (type: a
 agent nrepl                         Start an nREPL server
 agent repl                          Start a local REPL
 agent run [run-args]                Run an AgentLang app or script
+agent doc                           Generate OpenAPI and Swagger docs for the app
 agent version [format]              Print agentlang.cli version (format: edn/json)
 agent [options] <path/to/script.al> Run an AgentLang script")))
 
@@ -219,6 +220,9 @@ agent [options] <path/to/script.al> Run an AgentLang script")))
                  "run" (command-run const/current-directory
                                     "Starting app"
                                     "run" args)
+                 "doc" (command-run const/current-directory
+                                    "Generating documentation"
+                                    "doc" args)
                  "version" (command-version args)
                  nil (do
                        (util/err-println "ERROR: No command passed")
