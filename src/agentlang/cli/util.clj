@@ -80,6 +80,7 @@
                  (Character/isLetter ^char (last s))
                  (->> (seq s)
                       (every? #(or (Character/isLetter ^char %)
+                                   (Character/isDigit ^char %)
                                    (get project-name-allowed-delims %)))))
     "Project-name may only have letters or dash/underscore between letters"))
 
