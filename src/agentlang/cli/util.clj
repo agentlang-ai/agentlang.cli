@@ -1,6 +1,7 @@
 (ns agentlang.cli.util
   (:require [clojure.string :as string])
-  (:import (java.io BufferedReader File)))
+  (:import (java.io BufferedReader File)
+           (java.nio.file Path Paths)))
 
 
 (set! *warn-on-reflection* true)
@@ -181,8 +182,11 @@
 
 (defn make-absolute-file-path
   [^String relative-path]
-  (-> (File. relative-path)
-      (.getAbsolutePath)))
+  (-> relative-path
+      (Paths/get (make-array String 0))
+      (.toAbsolutePath)
+      (.normalize)
+      str))
 
 
 (defn make-parent-path

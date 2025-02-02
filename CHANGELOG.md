@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file. This change
 ## [0.6.2] - 2024-12-??
 
 - Allow numeric digits in new-project names
+- Add source dirs of :fs/:git dependencies to classpath
 - Baseline AgentLang version `0.6.2-alpha`
 
 ## [0.6.1] - 2024-12-06

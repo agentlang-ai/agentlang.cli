@@ -59,6 +59,7 @@
                   src-paths]} (core/discover-dependencies dirname)
           classpath (-> jar-deps
                         core/fetch-dependencies
+                        (concat (map util/make-absolute-file-path src-paths))
                         core/prepare-classpath)]
       (println classpath))))
 
@@ -95,6 +96,7 @@
                         (string/join util/path-separator))
         classpath (-> jar-deps
                       core/fetch-dependencies
+                      (concat (map util/make-absolute-file-path src-paths))
                       core/prepare-classpath)]
     (util/err-println (format "%s %s with AgentLang %s"
                               msg-prefix
@@ -144,6 +146,7 @@
                             (string/join util/path-separator))
             classpath (-> jar-deps
                           core/fetch-dependencies
+                          (concat (map util/make-absolute-file-path src-paths))
                           core/prepare-classpath)]
         (core/run-agentlang repo-name sourcepath classpath command args))
       git-result)))
