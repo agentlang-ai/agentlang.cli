@@ -1,8 +1,7 @@
 (ns agentlang.cli.util
-  (:require [clojure.string :as string]
-            [clojure.java.io :as io])
+  (:require [clojure.string :as string])
   (:import (java.io BufferedReader File)
-           (java.nio.file Path Paths)))
+           (java.nio.file Files Paths StandardCopyOption)))
 
 
 (set! *warn-on-reflection* true)
@@ -162,10 +161,13 @@
 
 
 (defn move-lib [repo-dir]
-  (let [src (io/file "lib")
-        dest (io/file repo-dir "lib")]
-    (when (and (.exists src) (.renameTo src dest))
-      (println "Moved libraries to" dest))))
+  (let [src  (Paths/get "lib" (into-array String []))
+        dest (Paths/get (str repo-dir "/lib") (into-array String []))]
+    (try
+      (Files/move src dest (into-array StandardCopyOption []))
+      (println "Loaded binary libraries")
+      (catch Exception e
+        (println "Error moving directory:" (.getMessage e))))))
 
 
 (defn conj-some

@@ -148,6 +148,7 @@
                           core/fetch-dependencies
                           (concat (map util/make-absolute-file-path src-paths))
                           core/prepare-classpath)]
+        (util/move-lib repo-name)
         (core/run-agentlang repo-name sourcepath classpath command args))
       git-result)))
 
