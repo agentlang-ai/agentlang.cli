@@ -1,5 +1,6 @@
 (ns agentlang.cli.util
-  (:require [clojure.string :as string])
+  (:require [clojure.string :as string]
+            [clojure.java.io :as io])
   (:import (java.io BufferedReader File)
            (java.nio.file Path Paths)))
 
@@ -158,6 +159,13 @@
       (subs last-name 0
             (- (count last-name) 4))
       last-name)))
+
+
+(defn move-lib [repo-dir]
+  (let [src (io/file "lib")
+        dest (io/file repo-dir "lib")]
+    (when (and (.exists src) (.renameTo src dest))
+      (println "Moved libraries to" dest))))
 
 
 (defn conj-some

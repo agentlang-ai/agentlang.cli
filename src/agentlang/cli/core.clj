@@ -240,6 +240,7 @@
         _ (when (some? sourcepath) (println "Setting sourcepath:" sourcepath)
             (doto (.environment pb)
               (.put const/envvar-agentlang-model-paths sourcepath)))
+        _ (util/move-lib dirname)
         p (.start pb)
         err (.errorReader p)
         out (.inputReader p)

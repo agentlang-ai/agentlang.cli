@@ -15,6 +15,10 @@ RUN agent new app hello && cd hello && agent classpath
 
 WORKDIR /agentlang
 
+COPY resource/download-libs.sh /agentlang/download-libs.sh
+RUN ./download-libs.sh
+RUN rm download-libs.sh
+
 ENV CLONE_CMD=FIXME
 ENV CLONE_URI=FIXME
 
