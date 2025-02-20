@@ -13,11 +13,11 @@ All notable changes to this project will be documented in this file. This change
    - Installer for Linux/macOS
    - GUI Installer for Windows
 
-## [0.6.2] - 2024-12-??
+## [0.6.2] - 2025-02-??
 
 - Allow numeric digits in new-project names
 - Add source dirs of :fs/:git dependencies to classpath
-- Baseline AgentLang version `0.6.2-alpha`
+- Baseline AgentLang version `0.6.2-alpha1`
 
 ## [0.6.1] - 2024-12-06
 
