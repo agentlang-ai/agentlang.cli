@@ -6,6 +6,7 @@
             [clojure.pprint :as pp]
             [clojure.walk :as walk]
             [agentlang.cli.constant :as const]
+            [clojure.tools.cli :refer [parse-opts]]
             [agentlang.cli.core :as core]
             [agentlang.cli.newproj :as newproj]
             [agentlang.cli.util :as util])
@@ -13,6 +14,15 @@
 
 
 (set! *warn-on-reflection* true)
+
+
+(def cli-options
+  [["-c" "--config CONFIG" "Configuration file"]
+   ["-i" "--interactive 'app-description'" "Invoke AI-assist to model an application"]
+   ["-h" "--help"]
+   ["-v" "--version"]
+   ["-g" "--graphql MODEL" "Generate GraphQL schema for reference"]
+   ["-n" "--nrepl" "Start nREPL server"]])
 
 
 (defmacro when-model-dir [dirname & body]
@@ -185,6 +195,28 @@
     (flush)))
 
 
+(defn command-buildui [dirname msg-prefix args]
+  (let [{options :options} (parse-opts args cli-options)
+        {:keys [app-model _ _]} (core/discover-dependencies dirname)
+        app-version    (:version app-model "(unknown app version)")
+        agentlang-version (core/rewrite-agentlang-version (:agentlang-version app-model))
+        model-name (-> app-model :name name s/lower-case)
+        config (util/read-config-file (get options :config "config.edn"))
+        {api-host :api-host auth-url :auth-url auth-service :auth-service}
+        (util/get-ui-options config)]
+    (command-run dirname msg-prefix "publish" ["local"]) 
+    (util/exec-in-shell 
+     (str "Building " model-name ":" app-version ":" agentlang-version)
+     ["lein" "new" "alui" (str model-name ":" app-version ":" agentlang-version)
+      api-host auth-url (name auth-service)]) 
+    (util/exec-in-shell
+     "Installing NPM packages"
+     ["npm" "install" :dir model-name])
+    (util/exec-in-shell
+     "Compiling to JavaScript"
+     ["npx" "shadow-cljs" "release" "app" :dir model-name])
+    (System/exit 0)))
+
 (defn command-help []
   (binding [*out* *err*]
     (util/err-println "Syntax: agent <command> [command-args]
@@ -223,6 +255,9 @@ agent [options] <path/to/script.al> Run an AgentLang script")))
                  "run" (command-run const/current-directory
                                     "Starting app"
                                     "run" args)
+                 "buildui" (command-buildui const/current-directory
+                                            "Building UI"
+                                            args)
                  "version" (command-version args)
                  nil (do
                        (util/err-println "ERROR: No command passed")
