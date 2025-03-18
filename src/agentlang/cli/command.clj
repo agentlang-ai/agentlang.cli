@@ -230,8 +230,11 @@ agent clonerun <git-url> [args]     Clone a (Git) repo and run the app
 agent new <project-type> <name>     Create a new AgentLang app/resolver (type: app/resolver)
 agent nrepl                         Start an nREPL server
 agent repl                          Start a local REPL
-agent test                          Run tests for an Agentlang application
+agent test                          Run tests for the app
 agent run [run-args]                Run an AgentLang app or script
+agent doc                           Generate OpenAPI and Swagger docs for the app
+agent buildui                       Generate admin UI for the app
+agent migrate MODEL-NAME [git/local] [branch/path]         Migrate database given previous version of the app
 agent version [format]              Print agentlang.cli version (format: edn/json)
 agent [options] <path/to/script.al> Run an AgentLang script")))
 
@@ -254,14 +257,20 @@ agent [options] <path/to/script.al> Run an AgentLang script")))
                                            "Starting REPL for app"
                                            "repl" args)
                  "test" (command-run const/current-directory
-                                    "Running tests"
-                                    "test" args)
+                                     "Running tests"
+                                     "test" args)
                  "run" (command-run const/current-directory
                                     "Starting app"
                                     "run" args)
+                 "doc" (command-run const/current-directory
+                                    "Generating documentation"
+                                    "doc" args)
                  "buildui" (command-buildui const/current-directory
                                             "Building UI"
                                             args)
+                 "migrate" (command-run const/current-directory
+                                        "Migrating database"
+                                        "migrate" args)
                  "version" (command-version args)
                  nil (do
                        (util/err-println "ERROR: No command passed")
