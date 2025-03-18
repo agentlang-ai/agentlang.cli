@@ -200,7 +200,7 @@
         {:keys [app-model _ _]} (core/discover-dependencies dirname)
         app-version    (:version app-model "(unknown app version)")
         agentlang-version (core/rewrite-agentlang-version (:agentlang-version app-model))
-        model-name (-> app-model :name name s/lower-case)
+        model-name (-> app-model :name name string/lower-case)
         config (util/read-config-file (get options :config "config.edn"))
         {api-host :api-host auth-url :auth-url auth-service :auth-service}
         (util/get-ui-options config)]
@@ -230,6 +230,7 @@ agent clonerun <git-url> [args]     Clone a (Git) repo and run the app
 agent new <project-type> <name>     Create a new AgentLang app/resolver (type: app/resolver)
 agent nrepl                         Start an nREPL server
 agent repl                          Start a local REPL
+agent test                          Run tests for an Agentlang application
 agent run [run-args]                Run an AgentLang app or script
 agent version [format]              Print agentlang.cli version (format: edn/json)
 agent [options] <path/to/script.al> Run an AgentLang script")))
@@ -252,6 +253,9 @@ agent [options] <path/to/script.al> Run an AgentLang script")))
                  "repl" (command-agentlang const/current-directory
                                            "Starting REPL for app"
                                            "repl" args)
+                 "doc" (command-run const/current-directory
+                                    "Running tests"
+                                    "test" args)
                  "run" (command-run const/current-directory
                                     "Starting app"
                                     "run" args)
