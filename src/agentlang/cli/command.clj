@@ -253,7 +253,7 @@ agent [options] <path/to/script.al> Run an AgentLang script")))
                  "repl" (command-agentlang const/current-directory
                                            "Starting REPL for app"
                                            "repl" args)
-                 "doc" (command-run const/current-directory
+                 "test" (command-run const/current-directory
                                     "Running tests"
                                     "test" args)
                  "run" (command-run const/current-directory
