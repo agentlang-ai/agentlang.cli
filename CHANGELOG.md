@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file. This change
    - Installer for Linux/macOS
    - GUI Installer for Windows
 
-## [0.6.2] - 2025-03-??
+## [0.6.2] - 2025-03-18
 
 - Allow numeric digits in new-project names
 - Add source dirs of :fs/:git dependencies to classpath
