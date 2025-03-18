@@ -13,13 +13,17 @@ All notable changes to this project will be documented in this file. This change
    - Installer for Linux/macOS
    - GUI Installer for Windows
 
-## [0.6.2] - 2025-02-??
+## [0.6.2] - 2025-03-??
 
 - Allow numeric digits in new-project names
 - Add source dirs of :fs/:git dependencies to classpath
-- Baseline AgentLang version `0.6.2-alpha1`
+- Baseline AgentLang version `0.6.2`
 - Download and load extension for sqlite-vector
-- Commands to generate UI, generate docs, migrate, and run tests
+- Add commands
+  - `buildui` - generate admin UI
+  - `doc` - generate OpenAPI/Swagger docs
+  - `migrate` - migrate database from previous app version
+  - `test` - run tests
 
 ## [0.6.1] - 2024-12-06
 
