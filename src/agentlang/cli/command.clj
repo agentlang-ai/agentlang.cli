@@ -196,6 +196,7 @@ agent nrepl                         Start an nREPL server
 agent repl                          Start a local REPL
 agent run [run-args]                Run an AgentLang app or script
 agent doc                           Generate OpenAPI and Swagger docs for the app
+agent migrate MODEL-NAME [git/local] [branch/path]         Migrate database given previous version of the app
 agent version [format]              Print agentlang.cli version (format: edn/json)
 agent [options] <path/to/script.al> Run an AgentLang script")))
 
@@ -223,6 +224,9 @@ agent [options] <path/to/script.al> Run an AgentLang script")))
                  "doc" (command-run const/current-directory
                                     "Generating documentation"
                                     "doc" args)
+                 "migrate" (command-run const/current-directory
+                                        "Migrating database"
+                                        "migrate" args)
                  "version" (command-version args)
                  nil (do
                        (util/err-println "ERROR: No command passed")
