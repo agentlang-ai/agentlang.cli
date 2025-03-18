@@ -117,11 +117,6 @@
     (execute-script dirname args)
     (command-agentlang dirname msg-prefix agentlang-command args)))
 
-(defn command-migrate [dirname msg-prefix agentlang-command args]
-  (if (script-execution? args)
-    (execute-script dirname args)
-    (command-agentlang dirname msg-prefix agentlang-command args)))
-
 
 (defn command-clone [[command repo-uri & args]]
   ;; [ Github ]
@@ -216,9 +211,9 @@ agent [options] <path/to/script.al> Run an AgentLang script")))
                  "run" (command-run const/current-directory
                                     "Starting app"
                                     "run" args)
-                 "migrate" (command-migrate const/current-directory
-                                    "Migrating database"
-                                    "migrate" args)
+                 "migrate" (command-run const/current-directory
+                                        "Migrating database"
+                                        "migrate" args)
                  "version" (command-version args)
                  nil (do
                        (util/err-println "ERROR: No command passed")
