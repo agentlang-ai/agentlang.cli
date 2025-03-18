@@ -2,18 +2,20 @@ FROM clojure:temurin-21-lein-jammy
 
 ENV DOCKER_CONTAINER=Yes
 
+RUN apt update && apt install -y git wget iproute2
+
+WORKDIR /tmp
+RUN git clone https://github.com/agentlang-ai/agentlang.git && cd agentlang && lein install
+
 COPY bin/agent /usr/local/bin/
 RUN mkdir -p /root/.agentlang/self-installs
 COPY target/uberjar/*-standalone.jar /root/.agentlang/self-installs
 
-RUN apt update && apt install -y git wget iproute2
-RUN /usr/local/bin/agent
-
-WORKDIR /tmp
-RUN git clone https://github.com/agentlang-ai/agentlang.git && cd agentlang && lein install
-RUN agent new app hello && cd hello && agent classpath
-
 WORKDIR /agentlang
+
+COPY resource/download-libs.sh /agentlang/download-libs.sh
+RUN ./download-libs.sh
+RUN rm download-libs.sh
 
 ENV CLONE_CMD=FIXME
 ENV CLONE_URI=FIXME

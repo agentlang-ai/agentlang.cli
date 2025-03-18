@@ -186,8 +186,11 @@
 
 (defn prepare-classpath
   [dep-filenames]
-  (->> (distinct dep-filenames)
-       (string/join File/pathSeparator)))
+  (->> dep-filenames
+       (filterv some?)
+       (mapv util/make-absolute-file-path)
+       distinct
+       (string/join util/path-separator)))
 
 
 (defn run-git-clone [{:keys [repo-uri repo-branch repo-tag]} local-repo-name]

@@ -6,6 +6,7 @@
             [clojure.pprint :as pp]
             [clojure.walk :as walk]
             [agentlang.cli.constant :as const]
+            [clojure.tools.cli :refer [parse-opts]]
             [agentlang.cli.core :as core]
             [agentlang.cli.newproj :as newproj]
             [agentlang.cli.util :as util])
@@ -13,6 +14,15 @@
 
 
 (set! *warn-on-reflection* true)
+
+
+(def cli-options
+  [["-c" "--config CONFIG" "Configuration file"]
+   ["-i" "--interactive 'app-description'" "Invoke AI-assist to model an application"]
+   ["-h" "--help"]
+   ["-v" "--version"]
+   ["-g" "--graphql MODEL" "Generate GraphQL schema for reference"]
+   ["-n" "--nrepl" "Start nREPL server"]])
 
 
 (defmacro when-model-dir [dirname & body]
@@ -59,6 +69,7 @@
                   src-paths]} (core/discover-dependencies dirname)
           classpath (-> jar-deps
                         core/fetch-dependencies
+                        (concat (map util/make-absolute-file-path src-paths))
                         core/prepare-classpath)]
       (println classpath))))
 
@@ -95,6 +106,7 @@
                         (string/join util/path-separator))
         classpath (-> jar-deps
                       core/fetch-dependencies
+                      (concat (map util/make-absolute-file-path src-paths))
                       core/prepare-classpath)]
     (util/err-println (format "%s %s with AgentLang %s"
                               msg-prefix
@@ -144,7 +156,9 @@
                             (string/join util/path-separator))
             classpath (-> jar-deps
                           core/fetch-dependencies
+                          (concat (map util/make-absolute-file-path src-paths))
                           core/prepare-classpath)]
+        (util/move-lib repo-name)
         (core/run-agentlang repo-name sourcepath classpath command args))
       git-result)))
 
@@ -181,6 +195,28 @@
     (flush)))
 
 
+(defn command-buildui [dirname msg-prefix args]
+  (let [{options :options} (parse-opts args cli-options)
+        {:keys [app-model _ _]} (core/discover-dependencies dirname)
+        app-version    (:version app-model "(unknown app version)")
+        agentlang-version (core/rewrite-agentlang-version (:agentlang-version app-model))
+        model-name (-> app-model :name name string/lower-case)
+        config (util/read-config-file (get options :config "config.edn"))
+        {api-host :api-host auth-url :auth-url auth-service :auth-service}
+        (util/get-ui-options config)]
+    (command-run dirname msg-prefix "publish" ["local"]) 
+    (util/exec-in-shell 
+     (str "Building " model-name ":" app-version ":" agentlang-version)
+     ["lein" "new" "alui" (str model-name ":" app-version ":" agentlang-version)
+      api-host auth-url (name auth-service)]) 
+    (util/exec-in-shell
+     "Installing NPM packages"
+     ["npm" "install" :dir model-name])
+    (util/exec-in-shell
+     "Compiling to JavaScript"
+     ["npx" "shadow-cljs" "release" "app" :dir model-name])
+    (System/exit 0)))
+
 (defn command-help []
   (binding [*out* *err*]
     (util/err-println "Syntax: agent <command> [command-args]
@@ -194,8 +230,10 @@ agent clonerun <git-url> [args]     Clone a (Git) repo and run the app
 agent new <project-type> <name>     Create a new AgentLang app/resolver (type: app/resolver)
 agent nrepl                         Start an nREPL server
 agent repl                          Start a local REPL
+agent test                          Run tests for the app
 agent run [run-args]                Run an AgentLang app or script
 agent doc                           Generate OpenAPI and Swagger docs for the app
+agent buildui                       Generate admin UI for the app
 agent migrate MODEL-NAME [git/local] [branch/path]         Migrate database given previous version of the app
 agent version [format]              Print agentlang.cli version (format: edn/json)
 agent [options] <path/to/script.al> Run an AgentLang script")))
@@ -218,12 +256,18 @@ agent [options] <path/to/script.al> Run an AgentLang script")))
                  "repl" (command-agentlang const/current-directory
                                            "Starting REPL for app"
                                            "repl" args)
+                 "test" (command-run const/current-directory
+                                     "Running tests"
+                                     "test" args)
                  "run" (command-run const/current-directory
                                     "Starting app"
                                     "run" args)
                  "doc" (command-run const/current-directory
                                     "Generating documentation"
                                     "doc" args)
+                 "buildui" (command-buildui const/current-directory
+                                            "Building UI"
+                                            args)
                  "migrate" (command-run const/current-directory
                                         "Migrating database"
                                         "migrate" args)

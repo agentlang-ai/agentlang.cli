@@ -1,6 +1,9 @@
 (ns agentlang.cli.util
-  (:require [clojure.string :as string])
-  (:import (java.io BufferedReader File)))
+  (:require [clojure.string :as string]
+            [clojure.java.shell :refer [sh]]
+            [clojure.walk :as walk])
+  (:import (java.io BufferedReader File)
+           (java.nio.file Paths)))
 
 
 (set! *warn-on-reflection* true)
@@ -80,6 +83,7 @@
                  (Character/isLetter ^char (last s))
                  (->> (seq s)
                       (every? #(or (Character/isLetter ^char %)
+                                   (Character/isDigit ^char %)
                                    (get project-name-allowed-delims %)))))
     "Project-name may only have letters or dash/underscore between letters"))
 
@@ -158,6 +162,13 @@
       last-name)))
 
 
+(defn move-lib [repo-dir]
+  (let [{:keys [exit _ err]} (sh "mv" "lib" repo-dir)]
+    (if (zero? exit)
+      (println "Libraries loaded")
+      (println "Error moving file:" err))))
+
+
 (defn conj-some
   [coll item]
   (if (some? item)
@@ -180,8 +191,11 @@
 
 (defn make-absolute-file-path
   [^String relative-path]
-  (-> (File. relative-path)
-      (.getAbsolutePath)))
+  (-> relative-path
+      (Paths/get (make-array String 0))
+      (.toAbsolutePath)
+      (.normalize)
+      str))
 
 
 (defn make-parent-path
@@ -201,3 +215,73 @@
                last)]
     (prn y)
     y))
+
+
+(defn- read-env-var-helper [x]
+  (let [v
+        (cond
+          (symbol? x)
+          (when-let [v (System/getenv (name x))]
+            (let [s (try
+                      (read-string v)
+                      (catch Exception _e v))]
+              (cond
+                (not= (str s) v) v
+                (symbol? s) (str s)
+                :else s)))
+
+          (vector? x)
+          (first (filter identity (mapv read-env-var-helper x)))
+
+          :else x)]
+    v))
+
+
+(defn read-env-var [x]
+  (let [v (read-env-var-helper x)]
+    (when (not v)
+      (throw (Exception. (str "Environment variable " x " is not set."))))
+    v))
+
+
+(defn- env-var-call? [v]
+  (and (list? v) (= 'env (first v))))
+
+
+(defn- process-env-var-calls [config]
+  (walk/prewalk
+   #(if (map? %)
+      (into {} (mapv (fn [[k v]]
+                       [k (if (env-var-call? v)
+                            (let [[n default] (rest v)]
+                              (or (System/getenv (name n)) default))
+                            v)])
+                     %))
+      %)
+   config))
+
+
+(defn read-config-file [config-file]
+  (process-env-var-calls
+   (binding [*data-readers* {'$ read-env-var}]
+     (let [env-config (or (System/getenv "AGENT_CONFIG") "nil")]
+       (merge (read-string (slurp config-file))
+              (read-string env-config))))))
+
+
+(defn get-ui-options [config]
+  (let [build-config (:client (:build config))
+        port (get-in config [:service :port] 8080)
+        api-host (get build-config :api-host (str "http://localhost:" port))
+        auth-url (get build-config :auth-url (str api-host "/auth"))
+        auth-service (get-in config [:authentication :service] :none)]
+    {:api-host api-host :auth-url auth-url :auth-service auth-service}))
+
+(defn exec-in-shell [message commands] 
+  (when message (println message))
+  (let [res (apply sh commands)
+        exit (:exit res)]
+    (when-not (= 0 exit)
+      (println "Command returned with non-zero result: " commands)
+      (println (:out res))
+      (System/exit 1))))
