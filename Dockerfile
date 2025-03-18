@@ -10,6 +10,7 @@ RUN apt update && apt install -y git wget iproute2
 RUN /usr/local/bin/agent
 
 WORKDIR /tmp
+RUN git clone https://github.com/agentlang-ai/agentlang.git && cd agentlang && lein install
 RUN agent new app hello && cd hello && agent classpath
 
 WORKDIR /agentlang

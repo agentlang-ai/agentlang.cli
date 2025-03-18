@@ -20,6 +20,16 @@ You would need Java 21 and Git installed to use this CLI tool.
 
 ## Usage
 
+### Running scripts
+
+If you have an Agentlang script (file ending in `.al` extension) you may run it as follows:
+
+```shell
+$ agent path/to/script.al
+```
+
+### Running apps
+
 Change into the AgentLang app directory and run the `agent` command:
 
 ```shell
