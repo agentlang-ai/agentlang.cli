@@ -122,7 +122,7 @@ $ ./docker-build.sh help  # commands: clean, build, push-version, push-latest
 
 ## License
 
-Copyright © 2024 Fractl, Inc
+Copyright © 2024-2025 Fractl, Inc
 
 This program and the accompanying materials are made available under the
 terms of the Apache License 2.0 which is available at
