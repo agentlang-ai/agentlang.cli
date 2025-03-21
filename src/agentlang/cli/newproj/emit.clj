@@ -93,7 +93,7 @@ https://www.apache.org/licenses/LICENSE-2.0.html.
 (record :Response {:Message :String})
 
 (dataflow :Greet
- {:Response {:Message '(str \"hello \" :Greet.Name)}})"
+ {:Response {:Message (quote (str \"hello \" :Greet.Name))}})"
             component-keyword)))
 
 
@@ -101,7 +101,7 @@ https://www.apache.org/licenses/LICENSE-2.0.html.
   (let []
     (format "(component
   %s.Core
-  {:clj-import '[(:require [agentlang.component :as cn])]})
+  {:clj-import (quote [(:require [agentlang.component :as cn])])})
 
 (entity :Message
   {:Greeting :String})
