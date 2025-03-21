@@ -259,7 +259,7 @@ agent classpath                     Print classpath for an AgentLang app
 agent clonenrepl <git-url>          Clone a (Git) repo and start nREPL server in the app
 agent clonerepl <git-url>           Clone a (Git) repo and start REPL in the app
 agent clonerun <git-url> [args]     Clone a (Git) repo and run the app
-agent lint                          Run linter on the app/resolver
+agent lint [<project-dir>]          Run linter on the app/resolver
 agent new <project-type> <name>     Create a new AgentLang app/resolver (type: app/resolver)
 agent nrepl                         Start an nREPL server
 agent repl                          Start a local REPL
@@ -282,7 +282,7 @@ agent [options] <path/to/script.al> Run an AgentLang script")))
                  "clonerepl" (command-clone (cons "repl" args))
                  "clonerun" (command-clone (cons "run" args))
                  "help" (command-help)
-                 "lint" (command-lint const/current-directory)
+                 "lint" (command-lint (or (first args) const/current-directory))
                  "new" (command-new args)
                  "nrepl" (command-agentlang const/current-directory
                                             "Starting nREPL server for app"
