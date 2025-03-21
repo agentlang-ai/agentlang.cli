@@ -13,6 +13,15 @@ All notable changes to this project will be documented in this file. This change
    - Installer for Linux/macOS
    - GUI Installer for Windows
 
+## [0.7.0] - 2025-??-??
+
+- Baseline AgentLang version `0.7.0-alpha1`
+- Fix new-project template
+  - CamelCase project names expanded to component directory name
+  - DesignStudio-friendly quoted form in generated project
+- Add commands
+  - `lint` - Run a linter (EDN-check all `.al` files, and more)
+
 ## [0.6.2] - 2025-03-18
 
 - Allow numeric digits in new-project names

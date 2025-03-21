@@ -74,6 +74,38 @@
       (println classpath))))
 
 
+(defn command-lint [dirname]
+  (when-model-dir
+    dirname
+    (let [source-filenames (->> (core/read-model dirname)
+                                :components ; find components
+                                (mapv util/component-name->file-name) ; as source filename
+                                (mapv (partial str dirname util/file-separator)))
+          error-flag-atom (atom false)
+          mark-error! (fn [] (reset! error-flag-atom false))]
+      (doseq [each-filename source-filenames]
+        ;;
+        (util/err-println "◉ Inspecting source file:" each-filename)
+        ;; ensure source file exists
+        (if (util/file-exists? each-filename)
+          (util/err-println ".. ✔ File is readable")
+          (do
+            (util/err-println ".. ❌ ERROR: Source file" each-filename "does not exist")
+            (mark-error!)))
+        ;; ensure source-file is readable as EDN
+        (if (vector? (try (as-> (slurp each-filename) $
+                                (str "[\n" $ "\n]")
+                                (edn/read-string $))
+                          (catch Exception e
+                            nil)))
+          (util/err-println ".. ✔ File is readable as valid EDN")
+          (do
+            (util/err-println ".. ❌ ERROR: Cannot read file" each-filename "as valid EDN")
+            (mark-error!))))
+      (when @error-flag-atom
+        1))))
+
+
 (defn command-new [[new-type new-name]]
   (when-not (#{"app" "resolver"} new-type)
     (util/err-exit "You must supply new-type, e.g. 'app', 'resolver' etc."))
@@ -227,6 +259,7 @@ agent classpath                     Print classpath for an AgentLang app
 agent clonenrepl <git-url>          Clone a (Git) repo and start nREPL server in the app
 agent clonerepl <git-url>           Clone a (Git) repo and start REPL in the app
 agent clonerun <git-url> [args]     Clone a (Git) repo and run the app
+agent lint [<project-dir>]          Run linter on the app/resolver
 agent new <project-type> <name>     Create a new AgentLang app/resolver (type: app/resolver)
 agent nrepl                         Start an nREPL server
 agent repl                          Start a local REPL
@@ -249,6 +282,7 @@ agent [options] <path/to/script.al> Run an AgentLang script")))
                  "clonerepl" (command-clone (cons "repl" args))
                  "clonerun" (command-clone (cons "run" args))
                  "help" (command-help)
+                 "lint" (command-lint (or (first args) const/current-directory))
                  "new" (command-new args)
                  "nrepl" (command-agentlang const/current-directory
                                             "Starting nREPL server for app"
