@@ -25,7 +25,7 @@
     (emit/make-file (format "%s/%s/core.al"
                             project-name
                             (util/project-name->component-dirname
-                              project-name)) (emit/emit-app-core.al component-keyword))))
+                              app-name)) (emit/emit-app-core.al component-keyword))))
 
 
 (defn create-new-resolver [resolver-name]
@@ -40,4 +40,4 @@
     (emit/make-file (format "%s/%s/core.al"
                             project-name
                             (util/project-name->component-dirname
-                              project-name)) (emit/emit-resolver-core.al component-keyword))))
+                              resolver-name)) (emit/emit-resolver-core.al component-keyword))))

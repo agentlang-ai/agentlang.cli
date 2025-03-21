@@ -74,8 +74,22 @@
 (def project-name-allowed-delims #{\- \_})
 
 
+(defn camel-to-underscore [^String given-name]
+  (->> (partition 2 1 given-name)  ; "HiThere" -> ((\H \i) (\i \T) (\T \h) (\h \e) (\e \r) (\r \e))
+       (map (fn [[^char prev ^char each]]
+              (if (and (Character/isLowerCase prev)
+                       (Character/isUpperCase each))
+                (str "_" each)
+                each)))
+       (cons (first given-name))
+       string/join))
+
+
 (defn project-name->component-dirname [^String project-name]
-  (string/replace project-name #"-" "_"))
+  (-> project-name
+      camel-to-underscore
+      string/lower-case
+      (string/replace #"-" "_")))
 
 
 (defn invalid-project-name? [^String s]
