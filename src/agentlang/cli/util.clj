@@ -1,7 +1,8 @@
 (ns agentlang.cli.util
   (:require [clojure.string :as string]
             [clojure.java.shell :refer [sh]]
-            [clojure.walk :as walk])
+            [clojure.walk :as walk]
+            [agentlang.cli.constant :as const])
   (:import (java.io BufferedReader File)
            (java.nio.file Paths)))
 
@@ -71,6 +72,8 @@
    (System/exit 1)))
 
 
+(def file-separator File/separator)
+(def path-separator File/pathSeparator)
 (def project-name-allowed-delims #{\- \_})
 
 
@@ -90,6 +93,16 @@
       camel-to-underscore
       string/lower-case
       (string/replace #"-" "_")))
+
+
+(defn component-name->file-name [component-name]
+  (let [^String component-name (if (keyword? component-name) ; e.g. :MicrosoftTeams.Core
+                                 (name component-name)
+                                 (str component-name))]
+    (str (->> (string/split component-name #"\.")
+              (map project-name->component-dirname)
+              (string/join file-separator))
+         const/al-file-extension)))
 
 
 (defn invalid-project-name? [^String s]
@@ -126,10 +139,6 @@
     (cond
       (.isDirectory f) "directory"
       (.isFile f) "file")))
-
-
-(def file-separator File/separator)
-(def path-separator File/pathSeparator)
 
 
 (defn parse-uri-params [params-string]

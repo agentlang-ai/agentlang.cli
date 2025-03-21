@@ -20,7 +20,7 @@ All notable changes to this project will be documented in this file. This change
   - CamelCase project names expanded to component directory name
   - DesignStudio-friendly quoted form in generated project
 - Add commands
-  - [Todo] `lint` - Run a linter (EDN-check all `.al` files, and more)
+  - `lint` - Run a linter (EDN-check all `.al` files, and more)
 
 ## [0.6.2] - 2025-03-18
 
