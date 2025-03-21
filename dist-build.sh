@@ -2,7 +2,7 @@
 
 set -e
 
-CLI_VERSION=0.6.2
+CLI_VERSION=0.7.0
 
 DIST_HOME=target/dist
 UNIX_DIST_BASE=$DIST_HOME/unix
