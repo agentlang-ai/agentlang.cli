@@ -5,7 +5,7 @@ ENV DOCKER_CONTAINER=Yes
 RUN apt update && apt install -y git wget iproute2
 
 WORKDIR /tmp
-RUN git clone https://github.com/agentlang-ai/agentlang.git && cd agentlang && lein install
+RUN git clone --single-branch --branch 0.6.2-stable https://github.com/agentlang-ai/agentlang.git && cd agentlang && lein install
 
 COPY bin/agent /usr/local/bin/
 RUN mkdir -p /root/.agentlang/self-installs
