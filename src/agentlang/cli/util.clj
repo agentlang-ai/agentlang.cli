@@ -72,6 +72,12 @@
    (System/exit 1)))
 
 
+(defn as-string [x]
+  (if (keyword? x)
+    (name x)
+    (str x)))
+
+
 (def file-separator File/separator)
 (def path-separator File/pathSeparator)
 (def project-name-allowed-delims #{\- \_})
@@ -96,9 +102,7 @@
 
 
 (defn component-name->file-name [component-name]
-  (let [^String component-name (if (keyword? component-name) ; e.g. :MicrosoftTeams.Core
-                                 (name component-name)
-                                 (str component-name))]
+  (let [^String component-name (as-string component-name)] ; e.g. :MicrosoftTeams.Core
     (str (->> (string/split component-name #"\.")
               (map project-name->component-dirname)
               (string/join file-separator))
