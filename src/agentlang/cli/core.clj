@@ -100,7 +100,7 @@
         github-repo-uri))))
 
 
-(defn resolve-git-dependency [repo-uri]
+(defn resolve-git-dependency [repo-uri dep-meta]
   (.mkdirs (io/file const/git-deps-directory))                    ; create Git deps base path if absent
   (let [{:keys [repo-uri
                 repo-branch
@@ -113,7 +113,11 @@
                         (util/err-println "To inject Github token to fetch dependency, define ENV var"
                                           (str "`" (key const/envar-git-deps-inject-token) "=true`"))
                         repo-uri)))
-        repo-name (util/git-repo-uri->repo-name repo-uri)
+        repo-name (or (when-let [model (:model dep-meta)]
+                        (-> model
+                            util/as-string
+                            string/lower-case))
+                      (util/git-repo-uri->repo-name repo-uri))
         repo-path (str const/git-deps-directory "/" repo-name)]
     (when-not (.exists (io/file repo-path))
       (run-git-clone {:repo-uri    repo-uri
@@ -141,14 +145,14 @@
   [model-dir raw-deps]
   (let [analyze-dependency (fn [given-dependency]
                              (util/err-println "Analyzing dependency:" (pr-str given-dependency))
-                             (let [[id target & more] given-dependency]
+                             (let [[id target & [dep-meta]] given-dependency]
                                (cond
                                  (symbol? id) {:jar-deps [given-dependency]}
                                  (= :fs id)   (discover-dependencies (if (util/absolute-file-path? target)
                                                                        target
                                                                        (str model-dir "/" target)))
                                  (= :git id)  (-> target
-                                                  resolve-git-dependency
+                                                  (resolve-git-dependency dep-meta)
                                                   discover-dependencies)
                                  :otherwise   (util/throw-ex-info
                                                 "Unsupported dependency type"

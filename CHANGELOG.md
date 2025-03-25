@@ -19,6 +19,8 @@ All notable changes to this project will be documented in this file. This change
 - Fix new-project template
   - CamelCase project names expanded to component directory name
   - DesignStudio-friendly quoted form in generated project
+- Fix: Use Git dependency repo metadata (model-name) for cloning repos
+  - To keep parity with DesignStudio
 - Add commands
   - `lint` - Run a linter (EDN-check all `.al` files, and more)
 
