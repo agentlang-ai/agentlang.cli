@@ -5,6 +5,7 @@ ENV DOCKER_CONTAINER=Yes
 RUN apt update && apt install -y git wget iproute2
 
 WORKDIR /tmp
+ARG CACHE_BUST
 RUN git clone https://github.com/agentlang-ai/agentlang.git && cd agentlang && lein install
 
 COPY bin/agent /usr/local/bin/

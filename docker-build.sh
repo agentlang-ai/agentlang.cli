@@ -54,7 +54,7 @@ function findVersion() {
 function buildImage() {
     lein do clean, test, uberjar
     yesOrNo "Build local docker image $IMG_NAME" && \
-      docker build -f Dockerfile -t $IMG_NAME .
+      docker build -f Dockerfile --build-arg CACHE_BUST=$(date +%s) -t $IMG_NAME .
 }
 
 function pushToDockerHub() {
