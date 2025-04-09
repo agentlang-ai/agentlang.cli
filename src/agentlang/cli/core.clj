@@ -103,6 +103,7 @@
 (defn resolve-git-dependency [repo-uri dep-meta]
   (.mkdirs (io/file const/git-deps-directory))                    ; create Git deps base path if absent
   (let [{:keys [repo-uri
+                repo-path
                 repo-branch
                 repo-tag]} (util/parse-repo-uri repo-uri)
         repo-uri  (let [git-deps-inject-token? (val const/envar-git-deps-inject-token)]
@@ -118,13 +119,19 @@
                             util/as-string
                             string/lower-case))
                       (util/git-repo-uri->repo-name repo-uri))
-        repo-path (str const/git-deps-directory "/" repo-name)]
-    (when-not (.exists (io/file repo-path))
+        local-base (str const/git-deps-directory "/" repo-name) ; where the cloned repo is supposed to exist
+        local-path (str local-base repo-path)]
+    (when-not (.exists (io/file local-base))
       (run-git-clone {:repo-uri    repo-uri
                       :repo-branch repo-branch
                       :repo-tag    repo-tag}
-                     repo-path))
-    repo-path))
+                     local-base))
+    (when-not (.exists (io/file local-path))
+      (util/throw-ex-info "Unable to resolve git dependency - local-path does not exist (maybe stale local copy)"
+                          {:repo-uri   repo-uri
+                           :local-base local-base
+                           :local-path local-path}))
+    local-path))
 
 
 (defn discover-dependencies
