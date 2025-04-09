@@ -154,26 +154,41 @@
 
 
 (defn parse-repo-uri
-  "Parse a (Git) repo to determine the base repo URI, branch and tag.
+  "Parse a (Git) repo to determine the base repo URI, path, branch and tag.
+  Given the following Git repo URI format:
+
+  https://<provider>.com/<org-name>/<repo-name>.git[/path/to/module][?<param>=<value>][#<branch>]
+  git@<provider>.com:<org-name>/<repo-name>.git[/path/to/module][?<param>=<value>][#<branch>]
+
+  Examples:
+  https://github.com/fractl-io/camel-xml-template-resolver.git?branch=use-camel-xml-loader (git repo with branch)
+  https://github.com/agentlang-hub/kamelets-xml.git/avro-deserialize-action (git repo with module path)
+
   The following URI suffixes are supported:
   Suffix format     Example       Result
   -------------     -------       ------
+  /<module-path>    /avro/serde   {:repo-path \"/avro/serde\"}
   #<branch>         #foo          {:repo-branch \"foo\" ...}
   ?branch=<branch>  ?branch=foo   {:repo-branch \"foo\" ...}
   ?tag=<tag>        ?tag=v0.1     {:repo-tag \"v0.1\"   ...}
   Result
   {:repo-uri    ...
+   :repo-path   ...
    :repo-branch ...
    :repo-tag    ...}"
   [repo-uri]
   (let [[repo-uri branch-name] (string/split repo-uri #"#" 2)
         [repo-uri qmark-suffix] (string/split repo-uri #"\?" 2)
+        [repo-uri repo-path] (string/split repo-uri
+                                           #"(?<=\.git)" ; positive-lookbehind regex, result repo-uri includes '.git'
+                                           2)            ; result repo-path may be "" when unspecified
         [branch-name tag-name] (if (some? qmark-suffix)
                                  (let [uri-params (parse-uri-params qmark-suffix)]
                                    [(or branch-name
                                         (get uri-params "branch")) (get uri-params "tag")])
                                  [branch-name nil])]
     {:repo-uri repo-uri
+     :repo-path repo-path
      :repo-branch branch-name
      :repo-tag tag-name}))
 
