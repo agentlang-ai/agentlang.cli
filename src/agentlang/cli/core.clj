@@ -165,6 +165,7 @@
                                                 "Unsupported dependency type"
                                                 {:dependency given-dependency}))))]
     (->> raw-deps
+         (remove #(-> (first %) #{:openapi})) ; ignore dependencies of these types
          (reduce (fn [{:keys [jar-deps
                               src-paths]} raw-dependency]
                    (let [{new-jar-deps :jar-deps

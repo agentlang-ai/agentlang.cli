@@ -25,6 +25,7 @@ All notable changes to this project will be documented in this file. This change
   - `lint` - Run a linter (EDN-check all `.al` files, and more)
 - Add support
   - Git dependency URI can now have an optional module-path
+- Ignore dependency of type `:openapi`
 
 ## [0.6.2] - 2025-03-18
 
